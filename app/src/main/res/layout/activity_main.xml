@@ -8,30 +8,31 @@
     android:id="@+id/mainactivity"
     android:background="@drawable/b">
 
-    <androidx.appcompat.widget.AppCompatImageView
-        android:layout_width="267dp"
-        android:layout_height="78dp"
-        android:layout_marginTop="112dp"
-        android:src="@drawable/pngegg"
-        app:layout_constraintStart_toStartOf="@id/cv1"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <FrameLayout
         android:id="@+id/cv1"
-        android:layout_width="266dp"
-        android:layout_height="54dp"
-        android:layout_marginStart="44dp"
-        android:layout_marginBottom="108dp"
+        android:layout_width="289dp"
+        android:layout_height="182dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginBottom="10dp"
         app:layout_constraintBottom_toTopOf="@+id/ll1"
         app:layout_constraintStart_toStartOf="@id/ll1">
 
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="160dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="68dp"
+            android:src="@drawable/logo1"
+            app:layout_constraintBottom_toTopOf="@id/iw1"
+            app:layout_constraintStart_toStartOf="@id/iw1" />
+
         <ImageView
+            android:id="@+id/iw1"
             android:layout_width="300dp"
             android:layout_height="60dp"
             android:layout_gravity="center"
             android:layout_marginStart="-3.2dp"
-            android:src="@drawable/a1"
-            android:scaleType="centerCrop" />
+            android:scaleType="centerCrop"
+            android:src="@drawable/a1" />
 
         <TextView
             android:id="@+id/tv1"
@@ -46,40 +47,44 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/ll1"
-        android:layout_width="345dp"
-        android:layout_height="230dp"
+        android:layout_width="match_parent"
+        android:layout_height="450dp"
         android:layout_marginStart="24dp"
+        android:layout_marginTop="320dp"
         android:layout_marginEnd="24dp"
-        android:layout_marginTop="364dp"
         android:orientation="vertical"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tl1"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="70dp"
             android:layout_gravity="center"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:boxStrokeColor="@color/white"
+            app:hintTextColor="@color/white">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/td1"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:hint="Username" />
+                android:hint="Kode Pekerja" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tl2"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="70dp"
             android:layout_gravity="center"
             android:layout_marginTop="25dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tl1">
-
+            app:layout_constraintTop_toBottomOf="@+id/tl1"
+            app:boxStrokeColor="@color/white"
+            app:hintTextColor="@color/white">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/td2"
                 android:layout_width="match_parent"
@@ -95,11 +100,11 @@
             android:layout_marginTop="40dp"
             android:backgroundTint="@color/buttonlogin"
             android:fontFamily="@font/font1"
-            android:textColor="@color/title"
             android:gravity="center"
+            android:text="Login"
+            android:textColor="@color/title"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tl2"
-            android:text="Login" />
+            app:layout_constraintTop_toBottomOf="@+id/tl2" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <include

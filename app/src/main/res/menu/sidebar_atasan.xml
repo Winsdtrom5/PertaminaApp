@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <item
+        android:id="@+id/menuHome"
+        android:enabled="true"
+        android:icon="@drawable/home"
+        android:title="Home"/>
+
+    <item
+        android:id="@+id/menulembur"
+        android:icon="@drawable/bag"
+        android:title="lembur"/>
+
+    <item
+        android:id="@+id/menudinas"
+        android:icon="@drawable/bag"
+        android:title="Dinas"/>
+
+    <item
+        android:id="@+id/menulaplembur"
+        android:icon="@drawable/statis"
+        android:title="laporan Lembur"/>
+
+    <item
+        android:id="@+id/menulapdinas"
+        android:icon="@drawable/statis"
+        android:title="laporan Dinas"/>
+
+    <item
+        android:id="@+id/menupjs"
+        android:icon="@drawable/users"
+        android:title="PJS"/>
+
+    <item
+        android:id="@+id/menupanduan"
+        android:enabled="true"
+        android:icon="@drawable/book"
+        android:title="Panduan Pengguna"/>
+
+    <item
+        android:id="@+id/menulogout"
+        android:enabled="true"
+        android:icon="@drawable/baseline_exit_to_app_24"
+        android:title="Log Out"/>
+</menu>
