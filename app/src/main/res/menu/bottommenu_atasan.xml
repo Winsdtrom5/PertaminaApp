@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menulembur"
+        android:icon="@drawable/bag"
+        android:title="List Lembur"/>
+
+    <item
+        android:id="@+id/menuHome"
+        android:icon="@drawable/home"
+        android:title="Pekerja"/>
+
+    <item
+        android:id="@+id/menupjs"
+        android:icon="@drawable/users"
+        android:title="List Dinas"/>
+</menu>
