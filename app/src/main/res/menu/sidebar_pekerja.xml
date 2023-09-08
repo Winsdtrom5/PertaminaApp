@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menuHome"
+        android:icon="@drawable/home"
+        android:title="Home"/>
+
+    <item
+        android:id="@+id/menulembur"
+        android:icon="@drawable/bag"
+        android:title="lembur"/>
+
+    <item
+        android:id="@+id/menudinas"
+        android:icon="@drawable/bag"
+        android:title="Dinas"/>
+
+    <item
+        android:id="@+id/menuUploadSertifikat"
+        android:icon="@drawable/baseline_upload_24"
+        android:title="Upload Sertifikat"/>
+
+    <item
+        android:id="@+id/menuSertifikat"
+        android:icon="@drawable/baseline_insert_drive_file_24"
+        android:title="Sertifikat"/>
+
+    <item
+        android:id="@+id/menulogout"
+        android:enabled="true"
+        android:icon="@drawable/baseline_exit_to_app_24"
+        android:title="Log Out"/>
+</menu>

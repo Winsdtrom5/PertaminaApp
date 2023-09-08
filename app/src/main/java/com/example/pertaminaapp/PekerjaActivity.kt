@@ -9,6 +9,7 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
@@ -20,37 +21,44 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import com.android.volley.AuthFailureError
+import com.android.volley.Response
+import com.android.volley.toolbox.StringRequest
 import com.example.pertaminaapp.connection.eworks
 import com.example.pertaminaapp.databinding.ActivityAtasanBinding
+import com.example.pertaminaapp.databinding.ActivityPekerjaBinding
 import com.example.pertaminaapp.session.SessionManager
 import com.google.android.material.navigation.NavigationView
+import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.json.JSONObject
+import java.nio.charset.StandardCharsets
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.SQLException
+import java.util.HashMap
 
-class AtasanActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelectedListener {
-    private lateinit var binding:ActivityAtasanBinding
+class PekerjaActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelectedListener {
+    private lateinit var binding : ActivityPekerjaBinding
     private lateinit var sessionManager: SessionManager
     private lateinit var drawer : DrawerLayout
     private lateinit var toggle : ActionBarDrawerToggle
     private lateinit var toolbar: Toolbar
-    private lateinit var menu : ImageView
-    private lateinit var kode:String
-    private lateinit var mbunlde : Bundle
-    private lateinit var loading : LinearLayout
     private lateinit var navigationView : NavigationView
+    private lateinit var loading : LinearLayout
+    private lateinit var kode : String
+    private lateinit var mbunlde : Bundle
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityAtasanBinding.inflate(layoutInflater)
+        binding = ActivityPekerjaBinding.inflate(layoutInflater)
         setContentView(binding.root)
         supportActionBar?.hide()
         toolbar = findViewById(R.id.toolbar)
-        drawer =findViewById(R.id.drawer_layout)
         navigationView = findViewById(R.id.nav_view)
-        setSupportActionBar(toolbar)
+        drawer =findViewById(R.id.drawer_layout)
+        setSupportActionBar(toolbar);
         loading = findViewById(R.id.layout_loading)
         getBundle()
         getName(kode)
@@ -66,27 +74,14 @@ class AtasanActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelect
                 rotateMenuIcon(true)
             }
         }
-        navigationView.setNavigationItemSelectedListener(this)
         toggle = ActionBarDrawerToggle(this,drawer,toolbar,
             R.string.navigation_drawer_open,R.string.navigation_drawer_close)
         drawer.addDrawerListener(toggle)
         toggle.syncState()
     }
-    private fun getBundle(){
-        try{
-            mbunlde = intent?.getBundleExtra("user")!!
-            if(mbunlde != null){
-                kode =mbunlde.getString("kode")!!
-            }
-        }catch(e: NullPointerException) {
-            kode = "Guest"
-        }
-    }
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         if(item.itemId == R.id.menupanduan){
-// Replace "sample.pdf" with the actual PDF file name in res/raw
-            val pdfFileName = "panduan_eworks_atasan.pdf"
-
+            val pdfFileName = "panduan_eworks.pdf"
             // Create an Intent to open the PDF
             val intent = Intent(Intent.ACTION_VIEW)
             intent.setDataAndType(
@@ -99,9 +94,25 @@ class AtasanActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelect
                 // Handle the case where no activity is available to open the PDF
                 // You can display a message to the user or implement a PDF viewer
             }
+        }else if(item.itemId == R.id.menuHome){
+            val intent = Intent(this@PekerjaActivity,PekerjaActivity::class.java)
+            val mBundle = Bundle()
+            mBundle.putString("kode",kode)
+            intent.putExtra("user",mBundle)
+            startActivity(intent)
         }
         drawer.closeDrawer(GravityCompat.START)
         return true
+    }
+    private fun getBundle(){
+        try{
+            mbunlde = intent?.getBundleExtra("user")!!
+            if(mbunlde != null){
+                kode =mbunlde.getString("kode")!!
+            }
+        }catch(e: NullPointerException) {
+            kode = "Guest"
+        }
     }
 
     @SuppressLint("ObjectAnimatorBinding")
@@ -134,7 +145,7 @@ class AtasanActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelect
             val connection = eworks.getConnection()
             if (connection != null) {
                 try {
-                    val query = "SELECT * FROM manager WHERE no_pers = ?"
+                    val query = "SELECT * FROM biodata WHERE kode_pekerja = ?"
                     val preparedStatement: PreparedStatement = connection.prepareStatement(query)
                     preparedStatement.setString(1, kode)
                     val resultSet: ResultSet = preparedStatement.executeQuery()
@@ -147,7 +158,7 @@ class AtasanActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelect
                         setUsername(navigationView, nama)
                     } else {
                         runOnUiThread {
-                            Toast.makeText(this@AtasanActivity, "Failed Connect To Database", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@PekerjaActivity, "Failed Connect To Database", Toast.LENGTH_SHORT).show()
                         }
                     }
                 } catch (e: SQLException) {
@@ -162,7 +173,7 @@ class AtasanActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelect
                 }
             } else {
                 setLoading(false)
-                Toast.makeText(this@AtasanActivity,"Tidak dapat tersambung", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@PekerjaActivity,"Tidak dapat tersambung",Toast.LENGTH_SHORT).show()
             }
         }
     }

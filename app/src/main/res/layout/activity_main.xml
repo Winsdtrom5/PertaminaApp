@@ -84,7 +84,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tl1"
             app:boxStrokeColor="@color/white"
-            app:hintTextColor="@color/white">
+            app:hintTextColor="@color/white"
+            app:endIconMode="password_toggle">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/td2"
                 android:layout_width="match_parent"
