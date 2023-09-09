@@ -86,7 +86,6 @@ class AtasanActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelect
         if(item.itemId == R.id.menupanduan){
 // Replace "sample.pdf" with the actual PDF file name in res/raw
             val pdfFileName = "panduan_eworks_atasan.pdf"
-
             // Create an Intent to open the PDF
             val intent = Intent(Intent.ACTION_VIEW)
             intent.setDataAndType(
@@ -143,7 +142,6 @@ class AtasanActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelect
                     }
                     if (resultSet.next()) {
                         val nama = resultSet.getString("nama")
-                        Log.d("test",nama)
                         setUsername(navigationView, nama)
                     } else {
                         runOnUiThread {
