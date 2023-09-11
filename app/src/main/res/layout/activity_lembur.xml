@@ -46,38 +46,32 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
-                android:cardCornerRadius="8dp"
                 android:elevation="4dp"
-                app:cardBackgroundColor="@color/white"
+                android:backgroundTint="#D3D3D3"
                 app:cardPreventCornerOverlap="false">
 
-            <Spinner
-                android:id="@+id/dropdown"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:entries="@array/dropdown_items"
-                android:prompt="@string/dropdown_prompt" />
+                <Spinner
+                    android:id="@+id/dropdown"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:entries="@array/dropdown_items"
+                    android:prompt="@string/dropdown_prompt" />
 
-        </androidx.cardview.widget.CardView>
+            </androidx.cardview.widget.CardView>
 
-
-            <!-- Content View -->
-            <ScrollView
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/Fv1"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"
                 android:padding="16dp">
-
-                <!-- Content goes here -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="This is the content view below the dropdown. It can contain any content you want."/>
-
-            </ScrollView>
+            </androidx.fragment.app.FragmentContainerView>
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
+    <include
+        android:id="@+id/layout_loading"
+        layout="@layout/layout_loading"
+        android:visibility="gone"/>
     <com.google.android.material.navigation.NavigationView
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
@@ -95,9 +89,5 @@
             android:layout_marginBottom="100dp"
             android:layout_marginTop="680dp"/>
     </com.google.android.material.navigation.NavigationView>
-    <include
-        android:id="@+id/layout_loading"
-        layout="@layout/layout_loading"
-        android:visibility="gone"/>
 </androidx.drawerlayout.widget.DrawerLayout>
 

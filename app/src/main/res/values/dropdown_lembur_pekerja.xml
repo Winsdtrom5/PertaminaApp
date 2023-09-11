@@ -1,6 +1,7 @@
 <!-- res/values/arrays.xml -->
 <resources>
     <array name="dropdown_items">
+        <item>Choose Your Request</item>
         <item>Buat Permintaan Lembur</item>
         <item>Daftar Permintaan Lembur</item>
     </array>

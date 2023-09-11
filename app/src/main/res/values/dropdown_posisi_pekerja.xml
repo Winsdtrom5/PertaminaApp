@@ -1,0 +1,7 @@
+<!-- res/values/arrays.xml -->
+<resources>
+    <array name="dropdown_posisi">
+        <item>A</item>
+        <item>B</item>
+    </array>
+</resources>

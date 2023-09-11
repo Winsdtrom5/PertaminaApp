@@ -3,7 +3,9 @@ package com.example.pertaminaapp
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.ActivityNotFoundException
+import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
@@ -25,6 +27,7 @@ import com.android.volley.AuthFailureError
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.example.pertaminaapp.connection.eworks
+import com.example.pertaminaapp.connection.lembur
 import com.example.pertaminaapp.databinding.ActivityAtasanBinding
 import com.example.pertaminaapp.databinding.ActivityPekerjaBinding
 import com.example.pertaminaapp.session.SessionManager
@@ -34,6 +37,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import org.w3c.dom.Text
 import java.nio.charset.StandardCharsets
 import java.sql.PreparedStatement
 import java.sql.ResultSet
@@ -50,6 +54,10 @@ class PekerjaActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelec
     private lateinit var loading : LinearLayout
     private lateinit var kode : String
     private lateinit var mbunlde : Bundle
+    private lateinit var setuju:TextView
+    private lateinit var tolak : TextView
+    private lateinit var revisi: TextView
+    private lateinit var tunda : TextView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPekerjaBinding.inflate(layoutInflater)
@@ -57,10 +65,16 @@ class PekerjaActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelec
         supportActionBar?.hide()
         toolbar = findViewById(R.id.toolbar)
         navigationView = findViewById(R.id.nav_view)
+        setuju = binding.setuju
+        tolak = binding.tolak
+        revisi = binding.revisi
+        tunda = binding.tertunda
         drawer =findViewById(R.id.drawer_layout)
         setSupportActionBar(toolbar);
         loading = findViewById(R.id.layout_loading)
         getBundle()
+        navigationView.setNavigationItemSelectedListener(this)
+        setDashboard(kode)
         getName(kode)
         getSupportActionBar()!!.setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener {
@@ -80,27 +94,56 @@ class PekerjaActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelec
         toggle.syncState()
     }
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        if(item.itemId == R.id.menupanduan){
-            val pdfFileName = "panduan_eworks.pdf"
-            // Create an Intent to open the PDF
-            val intent = Intent(Intent.ACTION_VIEW)
-            intent.setDataAndType(
-                Uri.parse("android.resource://${packageName}/raw/${pdfFileName}"),
-                "application/pdf"
-            )
-            try {
-                startActivity(intent)
-            } catch (e: ActivityNotFoundException) {
-                // Handle the case where no activity is available to open the PDF
-                // You can display a message to the user or implement a PDF viewer
+        when (item.itemId) {
+            R.id.menupanduan -> {
+                // Handle the "Panduan" item click (replace with your desired activity)
+                val pdfFileName = "panduan_eworks.pdf"
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.setDataAndType(
+                    Uri.parse("android.resource://${packageName}/raw/${pdfFileName}"),
+                    "application/pdf"
+                )
+                try {
+                    startActivity(intent)
+                } catch (e: ActivityNotFoundException) {
+                    // Handle the case where no activity is available to open the PDF
+                    // You can display a message to the user or implement a PDF viewer
+                }
             }
-        }else if(item.itemId == R.id.menuHome){
-            val intent = Intent(this@PekerjaActivity,PekerjaActivity::class.java)
-            val mBundle = Bundle()
-            mBundle.putString("kode",kode)
-            intent.putExtra("user",mBundle)
-            startActivity(intent)
+            R.id.menuHome -> {
+                // Handle the "Home" item click (replace with your desired activity)
+                val intent = Intent(this@PekerjaActivity, PekerjaActivity::class.java)
+                val mBundle = Bundle()
+                mBundle.putString("kode", kode)
+                intent.putExtra("user", mBundle)
+                startActivity(intent)
+            }
+            R.id.menulembur -> {
+                Log.d("Test","Clicked")
+                // Handle the "Lembur" item click (replace with your desired activity)
+                val intent = Intent(this@PekerjaActivity, LemburActivity::class.java)
+                val mBundle = Bundle()
+                mBundle.putString("kode", kode)
+                intent.putExtra("user", mBundle)
+                startActivity(intent)
+            }
+            R.id.menulogout -> {
+                val builder: AlertDialog.Builder = AlertDialog.Builder(this@PekerjaActivity)
+                builder.setMessage("Want to log out?")
+                    .setNegativeButton("No", object : DialogInterface.OnClickListener {
+                        override fun onClick(dialogInterface: DialogInterface, i: Int) {
+
+                        }
+                    })
+                    .setPositiveButton("YES", object : DialogInterface.OnClickListener {
+                        override fun onClick(dialogInterface: DialogInterface, i: Int) {
+                            startActivity(Intent(this@PekerjaActivity, MainActivity::class.java))
+                        }
+                    })
+                    .show()
+            }
         }
+
         drawer.closeDrawer(GravityCompat.START)
         return true
     }
@@ -136,10 +179,71 @@ class PekerjaActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelec
         val headerView = navigationView.getHeaderView(0)
         val usernameTextView = headerView.findViewById<TextView>(R.id.username_show)
         usernameTextView.text = username
+        runOnUiThread {
+            setLoading(false)
+        }
+    }
+
+    private fun setDashboard(kode: String){
+        setLoading(true)
+        GlobalScope.launch(Dispatchers.IO) {
+            val connection = eworks.getConnection()
+            if (connection != null) {
+                try {
+                    val query = "SELECT * FROM spkl WHERE kode_pekerja = ?"
+                    val preparedStatement: PreparedStatement = connection.prepareStatement(query)
+                    preparedStatement.setString(1, kode)
+                    val resultSet: ResultSet = preparedStatement.executeQuery()
+                    var approveCount = 0
+                    var divertedCount = 0
+                    var returnCount = 0
+                    var rejectedCount = 0
+                    var pendingCount = 0
+                    var reviewCount = 0
+                    while (resultSet.next()) {
+                        // Process each row of data here
+                        val status = resultSet.getString("status")
+                        if(status == "Returned"){
+                            returnCount++
+                        }else if(status == "Diverted"){
+                            divertedCount++
+                        }else if(status == "Rejected"){
+                            rejectedCount++
+                        }else if(status == "Pending"){
+                            pendingCount++
+                        }else if(status == "Review"){
+                            reviewCount++
+                        }else{
+                            approveCount++
+                        }
+                    }
+                    // Update UI on the main thread
+                    runOnUiThread {
+                        setuju.text = approveCount.toString()
+                        tolak.text = rejectedCount.toString()
+                        revisi.text = returnCount.toString()
+                        tunda.text = returnCount.toString()
+                    }
+
+                } catch (e: SQLException) {
+                    e.printStackTrace()
+                } finally {
+                    // Close the connection in a finally block
+                    try {
+                        connection.close()
+                    } catch (e: SQLException) {
+                        e.printStackTrace()
+                    }
+                }
+            } else {
+                runOnUiThread {
+                    Toast.makeText(this@PekerjaActivity,"Tidak dapat tersambung",Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     private fun getName(kode:String){
-        setLoading(true)
         GlobalScope.launch(Dispatchers.IO) {
             // Check the username and password in the database
             val connection = eworks.getConnection()
@@ -149,9 +253,6 @@ class PekerjaActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelec
                     val preparedStatement: PreparedStatement = connection.prepareStatement(query)
                     preparedStatement.setString(1, kode)
                     val resultSet: ResultSet = preparedStatement.executeQuery()
-                    runOnUiThread {
-                        setLoading(false)
-                    }
                     if (resultSet.next()) {
                         val nama = resultSet.getString("nama")
                         Log.d("test",nama)

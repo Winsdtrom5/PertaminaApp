@@ -18,4 +18,7 @@
     <string name="bottom_sheet_option_heading">Add Photo</string>
     <string name="bottom_sheet_option_remove_photo">Remove Photo</string>
     <string name="dropdown_prompt">Select an item:</string>
+    <string name="bulan_prompt">Pilih Bulan:</string>
+    <string name="tahun_prompt">Pilih Tahun:</string>
+    <string name="posisi_prompt">Pilih Posisi:</string>
 </resources>

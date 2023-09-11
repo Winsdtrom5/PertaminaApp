@@ -361,6 +361,10 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
     </GridLayout>
+    <include
+        android:id="@+id/layout_loading"
+        layout="@layout/layout_loading"
+        android:visibility="gone"/>
     <com.google.android.material.navigation.NavigationView
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
@@ -378,8 +382,4 @@
             android:src="@drawable/logo_header"
             android:layout_marginTop="680dp"/>
     </com.google.android.material.navigation.NavigationView>
-    <include
-        android:id="@+id/layout_loading"
-        layout="@layout/layout_loading"
-        android:visibility="gone"/>
 </androidx.drawerlayout.widget.DrawerLayout>

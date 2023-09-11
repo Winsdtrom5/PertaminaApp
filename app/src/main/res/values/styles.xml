@@ -5,4 +5,10 @@
         <!-- Customize your theme here. -->
         <!-- ... and so on ... -->
     </style>
+    <style name="CustomSpinnerStyle" parent="Widget.AppCompat.Spinner">
+        <item name="android:background">#D3D3D3</item>
+        <item name="android:popupBackground">#D3D3D3</item>
+        <item name="android:dropDownSelector">#D3D3D3</item>
+    </style>
+
 </resources>

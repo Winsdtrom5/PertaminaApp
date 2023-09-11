@@ -1,0 +1,51 @@
+<!-- res/layout/dialog_filter.xml -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <!-- Add filter options here, such as EditText for text input -->
+
+    <!-- Dropdown (Spinner) -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:elevation="4dp"
+        app:cardBackgroundColor="@color/white"
+        app:cardPreventCornerOverlap="false">
+
+        <Spinner
+            android:id="@+id/dropdown"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:entries="@array/dropdown_items"
+            android:prompt="@string/bulan_prompt" />
+
+    </androidx.cardview.widget.CardView>
+    <!-- Dropdown (Spinner) -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:elevation="4dp"
+        app:cardBackgroundColor="@color/white"
+        app:cardPreventCornerOverlap="false">
+
+        <Spinner
+            android:id="@+id/dropdown2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:entries="@array/dropdown_items"
+            android:prompt="@string/tahun_prompt" />
+
+    </androidx.cardview.widget.CardView>
+    <!-- Add other filter options as needed -->
+
+</LinearLayout>
