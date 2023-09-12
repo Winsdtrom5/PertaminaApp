@@ -21,6 +21,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.FragmentManager
 import com.example.pertaminaapp.connection.eworks
 import com.example.pertaminaapp.databinding.ActivityLemburBinding
 import com.example.pertaminaapp.fragment.DaftarLemburFragment
@@ -78,10 +79,16 @@ class LemburActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelect
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 // Handle item selection here and show the corresponding fragment
+                // Inside your activity's code
+                val bundle = Bundle()
+                bundle.putString("kode", kode)
                 when (position) {
-                    1 -> showTambahLemburFragment()
-                    2 -> showDaftarLemburFragment()
-                    // Add more cases for other positions if needed
+                    0 -> {
+                        showTambahLemburFragment(bundle)
+                    }
+                    1 -> {
+                        showDaftarLemburFragment(bundle)
+                    }
                 }
             }
 
@@ -90,6 +97,7 @@ class LemburActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelect
             }
         }
     }
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menupanduan -> {
@@ -238,21 +246,23 @@ class LemburActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelect
             transaction.commit()
         }
     }
-    private fun showDaftarLemburFragment(){
-        val existingFragment = supportFragmentManager.findFragmentById(R.id.Fv1)
+    private fun showTambahLemburFragment(bundle: Bundle) {
+        val fragment = TambahLemburFragment()
+        fragment.arguments = bundle
 
-        if (existingFragment != null) {
-            // A fragment is already in the container; replace it
-            val fragment = DaftarLemburFragment()
-            val transaction = supportFragmentManager.beginTransaction()
-            transaction.replace(R.id.Fv1, fragment)
-            transaction.commit()
-        } else {
-            // No fragment in the container; add a new one
-            val fragment = DaftarLemburFragment()
-            val transaction = supportFragmentManager.beginTransaction()
-            transaction.add(R.id.Fv1, fragment)
-            transaction.commit()
-        }
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.Fv1, fragment)
+        transaction.addToBackStack(null) // Optional: Add the transaction to the back stack
+        transaction.commit()
+    }
+
+    private fun showDaftarLemburFragment(bundle: Bundle) {
+        val fragment = DaftarLemburFragment()
+        fragment.arguments = bundle
+
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.Fv1, fragment)
+        transaction.addToBackStack(null) // Optional: Add the transaction to the back stack
+        transaction.commit()
     }
 }

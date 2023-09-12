@@ -44,7 +44,8 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv1"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
         android:layout_weight="1"
         tools:listitem="@layout/listlemburpekerja"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>

@@ -7,7 +7,7 @@
     android:id="@+id/drawer_layout"
     android:background="@drawable/bg1"
     tools:context=".PekerjaActivity"
-    tools:openDrawer="end">
+    tools:openDrawer="start">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -285,5 +285,6 @@
             android:src="@drawable/logo_header"
             android:layout_marginBottom="100dp"
             android:layout_marginTop="680dp"/>
+<!--        android:layout_marginTop="660dp"-->
     </com.google.android.material.navigation.NavigationView>
 </androidx.drawerlayout.widget.DrawerLayout>

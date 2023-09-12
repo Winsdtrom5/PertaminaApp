@@ -7,6 +7,7 @@ import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -35,6 +36,7 @@ import com.google.android.material.navigation.NavigationView
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import org.w3c.dom.Text
@@ -43,6 +45,7 @@ import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.SQLException
 import java.util.HashMap
+import kotlin.random.Random
 
 class PekerjaActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelectedListener {
     private lateinit var binding : ActivityPekerjaBinding
@@ -75,6 +78,7 @@ class PekerjaActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelec
         getBundle()
         navigationView.setNavigationItemSelectedListener(this)
         setDashboard(kode)
+//        startRealTimeUpdates()
         getName(kode)
         getSupportActionBar()!!.setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener {
@@ -157,7 +161,42 @@ class PekerjaActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelec
             kode = "Guest"
         }
     }
-
+//    private fun updateSignalStrength(navigationView: NavigationView, signalStrengthLevel: Int,ping : String) {
+//        val navigationView = findViewById<NavigationView>(R.id.nav_view)
+//        val headerView = navigationView.getHeaderView(0)
+//        val pingTextView = headerView.findViewById<TextView>(R.id.ping_show)
+//        val signalStrengthBar = headerView.findViewById<View>(R.id.signal_strength_bar)
+//        pingTextView.text = "Ping: $ping"
+//
+//        val barSize = resources.getDimensionPixelSize(R.dimen.signal_strength_bar_size)
+//        val barColor = when (signalStrengthLevel) {
+//            0 -> Color.RED
+//            1 -> Color.YELLOW
+//            2 -> Color.GREEN
+//            else -> Color.BLUE
+//        }
+//
+//        val layoutParams = signalStrengthBar.layoutParams
+//        layoutParams.width = barSize
+//        layoutParams.height = barSize
+//        signalStrengthBar.layoutParams = layoutParams
+//        signalStrengthBar.setBackgroundColor(barColor)
+//    }
+//    private fun startRealTimeUpdates() {
+//        GlobalScope.launch(Dispatchers.Main) {
+//            while (true) {
+//                // Simulated values (replace with your actual data sources)
+//                val signalStrengthLevel = Random.nextInt(0, 4)
+//                val pingMs = "${Random.nextInt(20, 200)} ms"
+//                val isOnline = Random.nextBoolean()
+//
+//                // Update username, ping, and signal strength in real-time
+//                updateSignalStrength(navigationView, signalStrengthLevel,pingMs)
+//
+//                delay(5000) // Update every 5 seconds (adjust as needed)
+//            }
+//        }
+//    }
     @SuppressLint("ObjectAnimatorBinding")
     private fun rotateMenuIcon(open: Boolean) {
         val rotation = if (open) 90f else 0f // Rotate 90 degrees when the drawer is opened

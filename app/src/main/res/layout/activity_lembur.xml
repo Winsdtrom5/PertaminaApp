@@ -45,9 +45,11 @@
                 android:id="@+id/cardView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
+                android:layout_margin="10dp"
                 android:elevation="4dp"
                 android:backgroundTint="#D3D3D3"
+                android:padding="8dp"
+                app:cardCornerRadius="20dp"
                 app:cardPreventCornerOverlap="false">
 
                 <Spinner
@@ -63,8 +65,8 @@
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/Fv1"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:padding="16dp">
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp">
             </androidx.fragment.app.FragmentContainerView>
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
