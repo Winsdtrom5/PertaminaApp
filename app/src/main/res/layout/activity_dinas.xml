@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/drawer_layout"
-    android:background="@drawable/bg1"
-    tools:context=".LemburActivity"
+    android:background="@color/white"
+    tools:context=".DinasActivity"
     tools:openDrawer="end">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -57,7 +57,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
-                    android:entries="@array/dropdown_items"
+                    android:entries="@array/dropdown_dinas"
                     android:prompt="@string/dropdown_prompt" />
 
             </androidx.cardview.widget.CardView>

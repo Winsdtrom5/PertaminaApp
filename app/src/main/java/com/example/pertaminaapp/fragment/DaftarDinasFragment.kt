@@ -2,13 +2,13 @@ package com.example.pertaminaapp.fragment
 
 import android.os.Bundle
 import android.util.Log
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pertaminaapp.R
@@ -25,7 +25,7 @@ import java.sql.SQLException
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class DaftarLemburFragment : Fragment() {
+class DaftarDinasFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: LemburAdapter
     private val lemburList: MutableList<LemburItem> = mutableListOf()
@@ -35,7 +35,7 @@ class DaftarLemburFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_daftar_lembur, container, false)
+        val view = inflater.inflate(R.layout.fragment_daftar_dinas, container, false)
         kode = arguments?.getString("kode")
         recyclerView = view.findViewById(R.id.rv1)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -154,4 +154,3 @@ class DaftarLemburFragment : Fragment() {
         }
     }
 }
-

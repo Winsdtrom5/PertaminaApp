@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="dropdown_dinas">
+        <item>Buat Permintaan Dinas</item>
+        <item>Daftar Permintaan Dinas</item>
+    </array>
+</resources>

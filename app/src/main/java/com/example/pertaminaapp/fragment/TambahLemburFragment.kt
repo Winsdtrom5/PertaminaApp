@@ -1,60 +1,92 @@
 package com.example.pertaminaapp.fragment
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import com.example.pertaminaapp.R
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
+import java.util.Calendar
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [TambahLemburFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class TambahLemburFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_tambah_lembur, container, false)
+        val view = inflater.inflate(R.layout.fragment_tambah_lembur, container, false)
+        val tilTanggal = view.findViewById<TextInputLayout>(R.id.TITanggal)
+        val edtanggal = tilTanggal.editText
+        val tilMasuk = view.findViewById<TextInputLayout>(R.id.TIMasuk)
+        val edmasuk = tilMasuk.editText
+        val tilKeluar = view.findViewById<TextInputLayout>(R.id.TIKeluar)
+        val edkeluar = tilKeluar.editText
+        edtanggal?.let { editText ->
+            // Set up click listener for the end icon of Tanggal
+            tilTanggal.setEndIconOnClickListener {
+                // Show date picker dialog
+                showDatePickerDialog(editText)
+            }
+        }
+        edmasuk?.let { editText ->
+            // Set up click listener for the end icon of Tanggal
+            tilMasuk.setEndIconOnClickListener {
+                // Show date picker dialog
+                showTimePickerDialog(editText)
+            }
+        }
+        edkeluar?.let { editText ->
+            // Set up click listener for the end icon of Tanggal
+            tilKeluar.setEndIconOnClickListener {
+                // Show date picker dialog
+                showTimePickerDialog(editText)
+            }
+        }
+        return view
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment TambahLemburFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            TambahLemburFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    private fun showDatePickerDialog(editText: EditText) {
+        val calendar = Calendar.getInstance()
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+        val datePickerDialog = DatePickerDialog(
+            requireContext(),
+            DatePickerDialog.OnDateSetListener { _, selectedYear, selectedMonth, selectedDay ->
+                val formattedDate = "$selectedYear-${selectedMonth + 1}-$selectedDay"
+                editText.setText(formattedDate)
+            },
+            year,
+            month,
+            day
+        )
+
+        datePickerDialog.show()
+    }
+
+    private fun showTimePickerDialog(editText: EditText) {
+        val calendar = Calendar.getInstance()
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        val minute = calendar.get(Calendar.MINUTE)
+
+        val timePickerDialog = TimePickerDialog(
+            requireContext(),
+            TimePickerDialog.OnTimeSetListener { _, selectedHour, selectedMinute ->
+                val formattedTime = "$selectedHour:$selectedMinute"
+                editText.setText(formattedTime)
+            },
+            hour,
+            minute,
+            true // 24-hour format
+        )
+
+        timePickerDialog.show()
     }
 }

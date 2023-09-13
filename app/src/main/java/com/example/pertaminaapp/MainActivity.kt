@@ -102,8 +102,10 @@ class MainActivity : AppCompatActivity() {
                             }
                         }
                     } else {
-                        setLoading(false)
-                        Toast.makeText(this@MainActivity,"Tidak dapat tersambung",Toast.LENGTH_SHORT).show()
+                        runOnUiThread {
+                            setLoading(false)
+                            Toast.makeText(this@MainActivity,"Tidak dapat tersambung",Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
             } else {

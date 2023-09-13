@@ -22,8 +22,9 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.example.pertaminaapp.connection.eworks
-import com.example.pertaminaapp.databinding.ActivityLemburBinding
-import com.example.pertaminaapp.fragment.DaftarLemburFragment
+import com.example.pertaminaapp.databinding.ActivityDinasBinding
+import com.example.pertaminaapp.fragment.DaftarDinasFragment
+import com.example.pertaminaapp.fragment.TambahDinasFragment
 import com.example.pertaminaapp.fragment.TambahLemburFragment
 import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.Dispatchers
@@ -33,8 +34,8 @@ import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.SQLException
 
-class LemburActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelectedListener {
-    private lateinit var binding : ActivityLemburBinding
+class DinasActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+    private lateinit var binding: ActivityDinasBinding
     private lateinit var drawer : DrawerLayout
     private lateinit var toggle : ActionBarDrawerToggle
     private lateinit var toolbar: Toolbar
@@ -43,10 +44,9 @@ class LemburActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelect
     private lateinit var spinner : Spinner
     private lateinit var kode : String
     private lateinit var mbunlde : Bundle
-    private var dataFetched = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityLemburBinding.inflate(layoutInflater)
+        binding = ActivityDinasBinding.inflate(layoutInflater)
         setContentView(binding.root)
         supportActionBar?.hide()
         spinner = binding.dropdown
@@ -84,10 +84,10 @@ class LemburActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelect
                 bundle.putString("kode", kode)
                 when (position) {
                     0 -> {
-                        showTambahLemburFragment(bundle)
+                        showTambahDinasFragment(bundle)
                     }
                     1 -> {
-                        showDaftarLemburFragment(bundle)
+                        showDaftarDinasFragment(bundle)
                     }
                 }
             }
@@ -116,7 +116,7 @@ class LemburActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelect
             }
             R.id.menuHome -> {
                 // Handle the "Home" item click (replace with your desired activity)
-                val intent = Intent(this@LemburActivity, PekerjaActivity::class.java)
+                val intent = Intent(this@DinasActivity, PekerjaActivity::class.java)
                 val mBundle = Bundle()
                 mBundle.putString("kode", kode)
                 intent.putExtra("user", mBundle)
@@ -125,7 +125,7 @@ class LemburActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelect
             R.id.menulembur -> {
                 Log.d("Test","Clicked")
                 // Handle the "Lembur" item click (replace with your desired activity)
-                val intent = Intent(this@LemburActivity, LemburActivity::class.java)
+                val intent = Intent(this@DinasActivity, LemburActivity::class.java)
                 val mBundle = Bundle()
                 mBundle.putString("kode", kode)
                 intent.putExtra("user", mBundle)
@@ -134,7 +134,7 @@ class LemburActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelect
             R.id.menudinas -> {
                 Log.d("Test","Clicked")
                 // Handle the "Lembur" item click (replace with your desired activity)
-                val intent = Intent(this@LemburActivity, DinasActivity::class.java)
+                val intent = Intent(this@DinasActivity, DinasActivity::class.java)
                 val mBundle = Bundle()
                 mBundle.putString("kode", kode)
                 intent.putExtra("user", mBundle)
@@ -142,7 +142,7 @@ class LemburActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelect
             }
             R.id.menulogout -> {
                 // Handle the "Log Out" item click (replace with your desired activity)
-                val intent = Intent(this@LemburActivity
+                val intent = Intent(this@DinasActivity
                     , MainActivity::class.java)
                 startActivity(intent)
             }
@@ -205,7 +205,7 @@ class LemburActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelect
                         setUsername(navigationView, nama)
                     } else {
                         runOnUiThread {
-                            Toast.makeText(this@LemburActivity, "Failed Connect To Database", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@DinasActivity, "Failed Connect To Database", Toast.LENGTH_SHORT).show()
                         }
                     }
                 } catch (e: SQLException) {
@@ -220,7 +220,7 @@ class LemburActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelect
                 }
             } else {
                 setLoading(false)
-                Toast.makeText(this@LemburActivity,"Tidak dapat tersambung", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@DinasActivity,"Tidak dapat tersambung", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -237,25 +237,25 @@ class LemburActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelect
         }
     }
 
-    private fun showTambahLemburFragment() {
+    private fun showTambahDinasFragment() {
         val existingFragment = supportFragmentManager.findFragmentById(R.id.Fv1)
 
         if (existingFragment != null) {
             // A fragment is already in the container; replace it
-            val fragment = TambahLemburFragment()
+            val fragment = TambahDinasFragment()
             val transaction = supportFragmentManager.beginTransaction()
             transaction.replace(R.id.Fv1, fragment)
             transaction.commit()
         } else {
             // No fragment in the container; add a new one
-            val fragment = TambahLemburFragment()
+            val fragment = TambahDinasFragment()
             val transaction = supportFragmentManager.beginTransaction()
             transaction.add(R.id.Fv1, fragment)
             transaction.commit()
         }
     }
-    private fun showTambahLemburFragment(bundle: Bundle) {
-        val fragment = TambahLemburFragment()
+    private fun showTambahDinasFragment(bundle: Bundle) {
+        val fragment = TambahDinasFragment()
         fragment.arguments = bundle
 
         val transaction = supportFragmentManager.beginTransaction()
@@ -264,8 +264,8 @@ class LemburActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelect
         transaction.commit()
     }
 
-    private fun showDaftarLemburFragment(bundle: Bundle) {
-        val fragment = DaftarLemburFragment()
+    private fun showDaftarDinasFragment(bundle: Bundle) {
+        val fragment = DaftarDinasFragment()
         fragment.arguments = bundle
 
         val transaction = supportFragmentManager.beginTransaction()

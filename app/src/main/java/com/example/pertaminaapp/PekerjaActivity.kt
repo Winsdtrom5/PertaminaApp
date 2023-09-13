@@ -4,13 +4,16 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.app.DownloadManager
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Environment
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -100,19 +103,26 @@ class PekerjaActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelec
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menupanduan -> {
-                // Handle the "Panduan" item click (replace with your desired activity)
                 val pdfFileName = "panduan_eworks.pdf"
-                val intent = Intent(Intent.ACTION_VIEW)
-                intent.setDataAndType(
-                    Uri.parse("android.resource://${packageName}/raw/${pdfFileName}"),
-                    "application/pdf"
-                )
-                try {
-                    startActivity(intent)
-                } catch (e: ActivityNotFoundException) {
-                    // Handle the case where no activity is available to open the PDF
-                    // You can display a message to the user or implement a PDF viewer
-                }
+
+                // Create a DownloadManager request
+                val request = DownloadManager.Request(Uri.parse("android.resource://${packageName}/raw/${pdfFileName}"))
+
+                // Set the title for the notification (visible in the downloads UI)
+                request.setTitle("Downloading Panduan eWorks PDF")
+
+                // Set the description for the notification
+                request.setDescription("Downloading...")
+
+                // Set the local destination for the downloaded file
+                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, pdfFileName)
+
+                // Get the DownloadManager service
+                val downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+
+                // Enqueue the download request
+                val downloadId = downloadManager.enqueue(request)
+                Toast.makeText(this, "Downloading Panduan eWorks PDF...", Toast.LENGTH_SHORT).show()
             }
             R.id.menuHome -> {
                 // Handle the "Home" item click (replace with your desired activity)
@@ -126,6 +136,15 @@ class PekerjaActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelec
                 Log.d("Test","Clicked")
                 // Handle the "Lembur" item click (replace with your desired activity)
                 val intent = Intent(this@PekerjaActivity, LemburActivity::class.java)
+                val mBundle = Bundle()
+                mBundle.putString("kode", kode)
+                intent.putExtra("user", mBundle)
+                startActivity(intent)
+            }
+            R.id.menudinas -> {
+                Log.d("Test","Clicked")
+                // Handle the "Lembur" item click (replace with your desired activity)
+                val intent = Intent(this@PekerjaActivity, DinasActivity::class.java)
                 val mBundle = Bundle()
                 mBundle.putString("kode", kode)
                 intent.putExtra("user", mBundle)
