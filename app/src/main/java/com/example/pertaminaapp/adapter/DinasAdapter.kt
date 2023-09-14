@@ -7,36 +7,35 @@ import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pertaminaapp.R
-import com.example.pertaminaapp.model.LemburItem
+import com.example.pertaminaapp.model.DinasItem
 import java.util.Locale
 
-class LemburAdapter(private val lemburList: List<LemburItem>) :
-    RecyclerView.Adapter<LemburAdapter.LemburViewHolder>() {
-    private var filteredLemburList: List<LemburItem> = lemburList
+class DinasAdapter(private val dinasList: List<DinasItem>) :
+    RecyclerView.Adapter<DinasAdapter.DinasViewHolder>() {
+    private var filteredDinasList: List<DinasItem> = dinasList
 
-    inner class LemburViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class DinasViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         // Define views in your item layout here
-        val pekerjaanTextView: TextView = itemView.findViewById(R.id.tvTitle1)
-        val tanggalTextView: TextView = itemView.findViewById(R.id.tvTitle2)
-        val jamTextView: TextView = itemView.findViewById(R.id.tvTitle3)
-        val cardView : CardView = itemView.findViewById(R.id.cvlist)
+        val pekerjaanTextView: TextView = itemView.findViewById(R.id.tvTitleDinas)
+        val tujuanTextView: TextView = itemView.findViewById(R.id.tvTitleTujuan)
+        val tanggalView: TextView = itemView.findViewById(R.id.tvTitleTanggal)
+        val cardView : CardView = itemView.findViewById(R.id.cvlistdinas)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LemburViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DinasViewHolder {
         val itemView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.listlemburpekerja, parent, false)
-        return LemburViewHolder(itemView)
+            .inflate(R.layout.listdinaspekerja, parent, false)
+        return DinasViewHolder(itemView)
     }
 
-    override fun onBindViewHolder(holder: LemburViewHolder, position: Int) {
-        val currentItem = filteredLemburList[position]
+    override fun onBindViewHolder(holder: DinasViewHolder, position: Int) {
+        val currentItem = filteredDinasList[position]
         // Bind data to views here
         holder.pekerjaanTextView.text = currentItem.pekerjaan
-        holder.tanggalTextView.text = currentItem.tanggal
-        holder.jamTextView.text = "${currentItem.jammasuk} - ${currentItem.jamkeluar}"
+        holder.tujuanTextView.text = currentItem.tujuan
+        holder.tanggalView.text = "${currentItem.tanggalberangkat} - ${currentItem.tanggalpulang}"
         if(currentItem.status == "Returned"){
             holder.cardView.setBackgroundColor(Color.parseColor("#f7adc3"))
         }else if(currentItem.status == "Diverted"){
@@ -56,9 +55,9 @@ class LemburAdapter(private val lemburList: List<LemburItem>) :
             override fun performFiltering(charSequence: CharSequence): FilterResults {
                 val charSequenceString = charSequence.toString().toLowerCase(Locale.getDefault())
                 val filteredList = if (charSequenceString.isEmpty()) {
-                    lemburList
+                    dinasList
                 } else {
-                    lemburList.filter { item ->
+                    dinasList.filter { item ->
                         item.pekerjaan.toLowerCase(Locale.getDefault()).contains(charSequenceString)
                     }
                 }
@@ -69,11 +68,11 @@ class LemburAdapter(private val lemburList: List<LemburItem>) :
             }
 
             override fun publishResults(charSequence: CharSequence, filterResults: FilterResults) {
-                filteredLemburList = filterResults.values as List<LemburItem>
+                filteredDinasList = filterResults.values as List<DinasItem>
                 notifyDataSetChanged()
             }
         }
     }
 
-    override fun getItemCount() = filteredLemburList.size
+    override fun getItemCount() = filteredDinasList.size
 }

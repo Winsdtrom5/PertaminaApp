@@ -162,6 +162,14 @@ class LemburActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelect
         }
     }
 
+    override fun onBackPressed() {
+        // Handle the "Home" item click (replace with your desired activity)
+        val intent = Intent(this@LemburActivity, PekerjaActivity::class.java)
+        val mBundle = Bundle()
+        mBundle.putString("kode", kode)
+        intent.putExtra("user", mBundle)
+        startActivity(intent)
+    }
     @SuppressLint("ObjectAnimatorBinding")
     private fun rotateMenuIcon(open: Boolean) {
         val rotation = if (open) 90f else 0f // Rotate 90 degrees when the drawer is opened

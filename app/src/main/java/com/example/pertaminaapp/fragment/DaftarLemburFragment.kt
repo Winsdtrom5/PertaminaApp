@@ -1,5 +1,6 @@
 package com.example.pertaminaapp.fragment
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,7 +8,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -30,7 +33,9 @@ class DaftarLemburFragment : Fragment() {
     private lateinit var adapter: LemburAdapter
     private val lemburList: MutableList<LemburItem> = mutableListOf()
     private var kode: String? = null
-
+    private lateinit var searchView: SearchView
+    private lateinit var textDataNotFound: TextView
+    @SuppressLint("MissingInflatedId")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -39,21 +44,31 @@ class DaftarLemburFragment : Fragment() {
         kode = arguments?.getString("kode")
         recyclerView = view.findViewById(R.id.rv1)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-
-        // Initialize the adapter with an empty list for now
-        adapter = LemburAdapter(lemburList)
-        recyclerView.adapter = adapter
-
-        // Fetch data from MySQL
-        fetchDataFromMySQL()
 // Inside DaftarLemburFragment onCreateView
-
+        searchView = view.findViewById<SearchView>(R.id.search_view)
+        textDataNotFound = view.findViewById<TextView>(R.id.not_found)
         val filterIcon = view.findViewById<ImageView>(R.id.filter_icon)
         filterIcon.setOnClickListener {
             // Show the filter dialog when the icon is clicked
             showFilterDialog()
         }
+        searchView = view.findViewById(R.id.search_view)
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
 
+            override fun onQueryTextChange(newText: String?): Boolean {
+                // Apply filtering by calling the getFilter() method
+                adapter.getFilter().filter(newText)
+                return true
+            }
+        })// Initialize the adapter with an empty list for now
+        adapter = LemburAdapter(lemburList)
+        recyclerView.adapter = adapter
+
+        // Fetch data from MySQL
+        fetchDataFromMySQL()
         return view
     }
     private fun showFilterDialog() {
@@ -132,6 +147,11 @@ class DaftarLemburFragment : Fragment() {
                         lemburList.clear()
                         lemburList.addAll(tempList)
                         adapter.notifyDataSetChanged()
+                        if (lemburList.isEmpty()) {
+                            textDataNotFound.visibility = View.VISIBLE
+                        } else {
+                            textDataNotFound.visibility = View.GONE
+                        }
                         setLoading(false)
                     }
                 } else {
@@ -142,6 +162,7 @@ class DaftarLemburFragment : Fragment() {
             } catch (e: SQLException) {
                 e.printStackTrace()
             }
+            setLoading(false)
         }
     }
 

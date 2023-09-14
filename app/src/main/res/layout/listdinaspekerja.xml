@@ -5,7 +5,7 @@
     android:layout_height="wrap_content">
     <!-- cardview_item.xml -->
     <androidx.cardview.widget.CardView
-        android:id="@+id/cvlist"
+        android:id="@+id/cvlistdinas"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
@@ -19,7 +19,7 @@
 
             <!-- Title 1 -->
             <TextView
-                android:id="@+id/tvTitle1"
+                android:id="@+id/tvTitleDinas"
                 android:layout_marginStart="5dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -40,7 +40,7 @@
 
                 <!-- Title 2 -->
                 <TextView
-                    android:id="@+id/tvTitle2"
+                    android:id="@+id/tvTitleTujuan"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -51,7 +51,7 @@
 
                 <!-- Title 3 -->
                 <TextView
-                    android:id="@+id/tvTitle3"
+                    android:id="@+id/tvTitleTanggal"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"

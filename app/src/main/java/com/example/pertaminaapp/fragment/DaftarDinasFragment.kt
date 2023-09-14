@@ -8,12 +8,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pertaminaapp.R
-import com.example.pertaminaapp.adapter.LemburAdapter
+import com.example.pertaminaapp.adapter.DinasAdapter
 import com.example.pertaminaapp.connection.eworks
+import com.example.pertaminaapp.model.DinasItem
 import com.example.pertaminaapp.model.LemburItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,9 +30,11 @@ import java.util.Locale
 
 class DaftarDinasFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: LemburAdapter
-    private val lemburList: MutableList<LemburItem> = mutableListOf()
+    private lateinit var adapter: DinasAdapter
+    private val dinasList: MutableList<DinasItem> = mutableListOf()
     private var kode: String? = null
+    private lateinit var searchView:SearchView
+    private lateinit var textDataNotFound: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,21 +44,31 @@ class DaftarDinasFragment : Fragment() {
         kode = arguments?.getString("kode")
         recyclerView = view.findViewById(R.id.rv1)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-
+        textDataNotFound = view.findViewById(R.id.text_data_not_found)
         // Initialize the adapter with an empty list for now
-        adapter = LemburAdapter(lemburList)
-        recyclerView.adapter = adapter
-
-        // Fetch data from MySQL
-        fetchDataFromMySQL()
-// Inside DaftarLemburFragment onCreateView
 
         val filterIcon = view.findViewById<ImageView>(R.id.filter_icon)
         filterIcon.setOnClickListener {
             // Show the filter dialog when the icon is clicked
             showFilterDialog()
         }
+        searchView = view.findViewById(R.id.search_view)
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
 
+            override fun onQueryTextChange(newText: String?): Boolean {
+                // Apply filtering by calling the getFilter() method
+                adapter.getFilter().filter(newText)
+                return true
+            }
+        })// Initialize the adapter with an empty list for now
+        adapter = DinasAdapter(dinasList)
+        recyclerView.adapter = adapter
+
+        // Fetch data from MySQL
+        fetchDataFromMySQL()
         return view
     }
     private fun showFilterDialog() {
@@ -64,25 +79,29 @@ class DaftarDinasFragment : Fragment() {
     }
 
     private fun getBulanAndTahunLists(): Pair<List<String>, List<String>> {
-        // Extract bulan and tahun values from lemburList and create lists
         val bulanList = ArrayList<String>()
         val tahunList = ArrayList<String>()
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
-        for (lemburItem in lemburList) {
+        for (dinasItem in dinasList) {
             try {
-                val tanggal = dateFormat.parse(lemburItem.tanggal)
-                val bulanNumber = SimpleDateFormat("MM", Locale.getDefault()).format(tanggal)
-                val tahun = SimpleDateFormat("yyyy", Locale.getDefault()).format(tanggal)
+                val tanggalbrangkat = dateFormat.parse(dinasItem.tanggalberangkat)
+                val tanggalpulang = dateFormat.parse(dinasItem.tanggalpulang)
+                val bulanNumber = SimpleDateFormat("MM", Locale.getDefault()).format(tanggalbrangkat)
+                val bulanNumber2 = SimpleDateFormat("MM", Locale.getDefault()).format(tanggalpulang)
+                val tahunberangakt = SimpleDateFormat("yyyy", Locale.getDefault()).format(tanggalbrangkat)
+                val tahunpulang = SimpleDateFormat("yyyy", Locale.getDefault()).format(tanggalpulang)
 
-                if (!bulanList.contains(bulanNumber)) {
+                if (!bulanList.contains(bulanNumber) && !bulanList.contains(bulanNumber2)) {
                     bulanList.add(bulanNumber)
+                    bulanList.add(bulanNumber2)
                 }
-                if (!tahunList.contains(tahun)) {
-                    tahunList.add(tahun)
+                if (!tahunList.contains(tahunberangakt) && !tahunList.contains(tahunpulang)) {
+                    tahunList.add(tahunberangakt)
+                    tahunList.add(tahunpulang)
                 }
             } catch (e: Exception) {
-                Log.e("Error", "Error parsing date: ${lemburItem.tanggal}")
+                Log.e("Error", "Error parsing date: ${dinasItem.tanggalberangkat}")
             }
         }
 
@@ -105,33 +124,38 @@ class DaftarDinasFragment : Fragment() {
             try {
                 val connection = eworks.getConnection()
                 if (connection != null) {
-                    val query = "SELECT * FROM spkl WHERE kode_pekerja = ?"
+                    val query = "SELECT * FROM spd WHERE kode_pekerja = ?"
                     val preparedStatement: PreparedStatement = connection.prepareStatement(query)
                     preparedStatement.setString(1, kode)
                     val resultSet: ResultSet = preparedStatement.executeQuery()
 
                     // Create a temporary list to store the data
-                    val tempList: MutableList<LemburItem> = mutableListOf()
+                    val tempList: MutableList<DinasItem> = mutableListOf()
 
                     while (resultSet.next()) {
-                        val pekerjaan = resultSet.getString("pekerjaan")
+                        val pekerjaan = resultSet.getString("keterangan")
                         Log.d("A", pekerjaan)
-                        val jammasuk = resultSet.getString("mulai")
-                        val jamkeluar = resultSet.getString("akhir")
-                        val tanggal = resultSet.getString("tanggal")
+                        val mulai = resultSet.getString("mulai")
+                        val akhir = resultSet.getString("akhir")
+                        val tujuan = resultSet.getString("tujuan")
                         val status = resultSet.getString("status")
-                        val lemburItem = LemburItem(pekerjaan, tanggal, jammasuk, jamkeluar, status)
+                        val dinasItem = DinasItem(pekerjaan, tujuan, mulai, akhir, status)
 
                         // Add each item to the temporary list
-                        tempList.add(lemburItem)
+                        tempList.add(dinasItem)
                     }
 
                     // Update the UI on the main thread with the complete list
                     withContext(Dispatchers.Main) {
                         // Clear the existing list and add all items from tempList
-                        lemburList.clear()
-                        lemburList.addAll(tempList)
+                        dinasList.clear()
+                        dinasList.addAll(tempList)
                         adapter.notifyDataSetChanged()
+                        if (dinasList.isEmpty()) {
+                            textDataNotFound.visibility = View.VISIBLE
+                        } else {
+                            textDataNotFound.visibility = View.GONE
+                        }
                         setLoading(false)
                     }
                 } else {

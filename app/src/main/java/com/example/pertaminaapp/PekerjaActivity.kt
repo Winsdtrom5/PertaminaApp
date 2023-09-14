@@ -180,6 +180,22 @@ class PekerjaActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelec
             kode = "Guest"
         }
     }
+
+    override fun onBackPressed() {
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this@PekerjaActivity)
+        builder.setMessage("Want to log out?")
+            .setNegativeButton("No", object : DialogInterface.OnClickListener {
+                override fun onClick(dialogInterface: DialogInterface, i: Int) {
+
+                }
+            })
+            .setPositiveButton("YES", object : DialogInterface.OnClickListener {
+                override fun onClick(dialogInterface: DialogInterface, i: Int) {
+                    startActivity(Intent(this@PekerjaActivity, MainActivity::class.java))
+                }
+            })
+            .show()
+    }
 //    private fun updateSignalStrength(navigationView: NavigationView, signalStrengthLevel: Int,ping : String) {
 //        val navigationView = findViewById<NavigationView>(R.id.nav_view)
 //        val headerView = navigationView.getHeaderView(0)

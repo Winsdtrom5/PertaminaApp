@@ -3,7 +3,9 @@ package com.example.pertaminaapp
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.ActivityNotFoundException
+import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
@@ -101,6 +103,22 @@ class AtasanActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelect
         }
         drawer.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    override fun onBackPressed() {
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this@AtasanActivity)
+        builder.setMessage("Want to log out?")
+            .setNegativeButton("No", object : DialogInterface.OnClickListener {
+                override fun onClick(dialogInterface: DialogInterface, i: Int) {
+
+                }
+            })
+            .setPositiveButton("YES", object : DialogInterface.OnClickListener {
+                override fun onClick(dialogInterface: DialogInterface, i: Int) {
+                    startActivity(Intent(this@AtasanActivity, MainActivity::class.java))
+                }
+            })
+            .show()
     }
 
     @SuppressLint("ObjectAnimatorBinding")
