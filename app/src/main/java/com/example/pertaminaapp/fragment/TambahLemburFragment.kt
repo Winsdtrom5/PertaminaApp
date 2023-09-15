@@ -1,5 +1,6 @@
 package com.example.pertaminaapp.fragment
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Bundle
@@ -7,14 +8,17 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import com.example.pertaminaapp.R
+import com.example.pertaminaapp.model.UnitItem
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import java.util.Calendar
 
 class TambahLemburFragment : Fragment() {
-
+    private lateinit var posisi : AutoCompleteTextView
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -27,6 +31,22 @@ class TambahLemburFragment : Fragment() {
         val edmasuk = tilMasuk.editText
         val tilKeluar = view.findViewById<TextInputLayout>(R.id.TIKeluar)
         val edkeluar = tilKeluar.editText
+        posisi = view.findViewById(R.id.autoCompletePosisi)
+        val unitList = listOf(
+            UnitItem("10017275", "General Manager"),
+            UnitItem("10017276", "Maintenance"),
+            UnitItem("10017279", "Procurement"),
+            UnitItem("10017281", "Operating & Manufacturing"),
+            UnitItem("10017285", "Engineering & Development"),
+            UnitItem("10017286", "HSSE"),
+            UnitItem("10019430", "QM"),
+            UnitItem("10039450", "Human Capital"),
+            UnitItem("10057049", "Asset Management"),
+            UnitItem("10059224", "ICT"),
+            UnitItem("10064918", "Finance")
+        )
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, unitList)
+        posisi.setAdapter(adapter)
         edtanggal?.let { editText ->
             // Set up click listener for the end icon of Tanggal
             tilTanggal.setEndIconOnClickListener {

@@ -16,7 +16,9 @@ import java.util.Locale
 class LemburAdapter(private val lemburList: List<LemburItem>) :
     RecyclerView.Adapter<LemburAdapter.LemburViewHolder>() {
     private var filteredLemburList: List<LemburItem> = lemburList
-
+    private var selectedBulan: String? = null
+    private var selectedTahun: String? = null
+    private var selectedStatus: String? = null
     inner class LemburViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         // Define views in your item layout here
         val pekerjaanTextView: TextView = itemView.findViewById(R.id.tvTitle1)
@@ -74,6 +76,9 @@ class LemburAdapter(private val lemburList: List<LemburItem>) :
             }
         }
     }
-
+    fun updateFilter(filteredLemburList: List<LemburItem>) {
+        this.filteredLemburList = filteredLemburList
+        notifyDataSetChanged()
+    }
     override fun getItemCount() = filteredLemburList.size
 }

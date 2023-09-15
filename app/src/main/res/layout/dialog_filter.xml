@@ -1,11 +1,12 @@
 <!-- res/layout/dialog_filter.xml -->
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_margin="75dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".fragment.FilterDialogFragment">
 
     <!-- Add filter options here, such as EditText for text input -->
 
@@ -30,51 +31,65 @@
                 android:textStyle="bold"
                 android:fontFamily="@font/font1"
                 android:textColor="@color/black"/>
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardView"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/bulan"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:elevation="2dp"
+                android:layout_margin="15dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                app:cardElevation="4dp"
-                android:backgroundTint="#D3D3D3"
-                app:cardCornerRadius="20dp"
-                app:cardUseCompatPadding="true"
-                app:cardBackgroundColor="@color/white"
-                app:cardPreventCornerOverlap="false">
-
-                <Spinner
-                    android:id="@+id/dropdownbulan"
+                android:layout_height="60dp">
+                <AutoCompleteTextView
+                    android:id="@+id/acbulan"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:entries="@array/dropdown_items"
-                    android:prompt="@string/bulan_prompt" />
-
-            </androidx.cardview.widget.CardView>
+                    android:background="#E5E4E2"
+                    android:layout_height="match_parent"
+                    android:textSize="15dp"
+                    android:hint="Pilih Bulan"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:cursorVisible="false"
+                    android:inputType="none"/>
+            </com.google.android.material.textfield.TextInputLayout>
             <!-- Dropdown (Spinner) -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardView2"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tahun"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:elevation="2dp"
+                android:layout_margin="15dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                app:cardElevation="4dp"
-                android:backgroundTint="#D3D3D3"
-                app:cardCornerRadius="20dp"
-                app:cardUseCompatPadding="true"
-                app:cardBackgroundColor="@color/white"
-                app:cardPreventCornerOverlap="false">
-
-                <Spinner
-                    android:id="@+id/dropdowntahun"
+                android:layout_height="60dp">
+                <AutoCompleteTextView
+                    android:id="@+id/actahun"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:entries="@array/dropdown_items"
-                    android:prompt="@string/tahun_prompt" />
-
-            </androidx.cardview.widget.CardView>
+                    android:background="#E5E4E2"
+                    android:layout_height="match_parent"
+                    android:textSize="15dp"
+                    android:hint="Pilih Tahun"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:cursorVisible="false"
+                    android:inputType="none"/>
+            </com.google.android.material.textfield.TextInputLayout>
             <!-- Add other filter options as needed -->
-
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/status"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:elevation="2dp"
+                android:layout_margin="15dp"
+                android:layout_width="match_parent"
+                android:layout_height="60dp">
+                <AutoCompleteTextView
+                    android:id="@+id/acstatus"
+                    android:layout_width="match_parent"
+                    android:background="#E5E4E2"
+                    android:layout_height="match_parent"
+                    android:textSize="15dp"
+                    android:hint="Pilih Status"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:cursorVisible="false"
+                    android:inputType="none"/>
+            </com.google.android.material.textfield.TextInputLayout>
             <Button
                 android:id="@+id/buttonApply"
                 android:layout_width="wrap_content"

@@ -28,13 +28,17 @@ import java.sql.SQLException
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class DaftarLemburFragment : Fragment() {
+class DaftarLemburFragment : Fragment(), FilterDialogFragment.FilterDialogListener  {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: LemburAdapter
     private val lemburList: MutableList<LemburItem> = mutableListOf()
     private var kode: String? = null
     private lateinit var searchView: SearchView
+    private var selectedStatus: String? = null
+    private var selectedBulan: String? = null
+    private var selectedTahun: String? = null
     private lateinit var textDataNotFound: TextView
+    private var filteredLemburList: List<LemburItem> = mutableListOf()
     @SuppressLint("MissingInflatedId")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -76,6 +80,60 @@ class DaftarLemburFragment : Fragment() {
         val (uniqueBulanList, uniqueTahunList) = getBulanAndTahunLists()
         val filterDialogFragment = FilterDialogFragment.newInstance(uniqueBulanList, uniqueTahunList)
         filterDialogFragment.show(fragmentManager, "com.example.pertaminaapp.fragment.FilterDialogFragment")
+    }
+
+    private fun applyFilters() {
+        // Filter your data based on the selected filters
+        filteredLemburList = lemburList.filter { item ->
+            (selectedStatus == null || item.status == selectedStatus) &&
+                    (selectedBulan == null || extractMonth(selectedBulan!!) == extractBulan(item.tanggal)) &&
+                    (selectedTahun == null || selectedTahun == extractTahun(item.tanggal))
+        }
+        // Update the adapter with the filtered list
+        adapter.updateFilter(filteredLemburList)
+    }
+
+    private fun extractMonth(date: String): String {
+        val monthNameToNumber = mapOf(
+            "Januari" to "01",
+            "Februari" to "02",
+            "Maret" to "03",
+            "April" to "04",
+            "Mei" to "05",
+            "Juni" to "06",
+            "Juli" to "07",
+            "Agustus" to "08",
+            "September" to "09",
+            "Oktober" to "10",
+            "November" to "11",
+            "Desember" to "12"
+        )
+
+        // Check if the provided month name exists in the mapping
+        val monthNumber = monthNameToNumber[date]
+
+        // Use the mapping to convert the month name to 2-digit format
+        return monthNumber ?: "00"
+    }
+    private fun extractBulan(date: String): String {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val parsedDate = dateFormat.parse(date)
+        return SimpleDateFormat("MM", Locale.getDefault()).format(parsedDate)
+    }
+
+    private fun extractTahun(date: String): String {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val parsedDate = dateFormat.parse(date)
+        return SimpleDateFormat("yyyy", Locale.getDefault()).format(parsedDate)
+    }
+
+    override fun onFilterApplied(selectedStatus: String, selectedBulan: String, selectedTahun: String) {
+        this.selectedStatus = if (selectedStatus.isBlank()) null else selectedStatus
+        this.selectedBulan = if (selectedBulan.isBlank()) null else selectedBulan
+        this.selectedTahun = if (selectedTahun.isBlank()) null else selectedTahun
+
+        // Apply the filters
+        applyFilters()
     }
 
     private fun getBulanAndTahunLists(): Pair<List<String>, List<String>> {

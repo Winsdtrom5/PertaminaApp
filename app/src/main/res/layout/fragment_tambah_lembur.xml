@@ -41,7 +41,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="60dp">
                 <AutoCompleteTextView
-                    android:id="@+id/autoCompleteTextView"
+                    android:id="@+id/autoCompletePosisi"
                     android:layout_width="match_parent"
                     android:background="#E5E4E2"
                     android:layout_height="match_parent"
