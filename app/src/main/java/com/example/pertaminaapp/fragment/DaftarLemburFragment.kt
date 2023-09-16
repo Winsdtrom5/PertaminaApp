@@ -37,6 +37,10 @@ class DaftarLemburFragment : Fragment(), FilterDialogFragment.FilterDialogListen
     private var selectedStatus: String? = null
     private var selectedBulan: String? = null
     private var selectedTahun: String? = null
+    private var isFilterApplied = false
+    private var lastSelectedStatus: String? = null
+    private var lastSelectedBulan: String? = null
+    private var lastSelectedTahun: String? = null
     private lateinit var textDataNotFound: TextView
     private var filteredLemburList: List<LemburItem> = mutableListOf()
     @SuppressLint("MissingInflatedId")
@@ -63,11 +67,27 @@ class DaftarLemburFragment : Fragment(), FilterDialogFragment.FilterDialogListen
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                // Apply filtering by calling the getFilter() method
-                adapter.getFilter().filter(newText)
+                val filteredData = if (isFilterApplied) {
+                    // Search in filteredLemburList
+                    filteredLemburList.filter { item ->
+                        item.pekerjaan.toLowerCase(Locale.getDefault()).contains(newText.orEmpty().toLowerCase(Locale.getDefault()))
+                    }
+                } else {
+                    // Search in lemburList
+                    lemburList.filter { item ->
+                        item.pekerjaan.toLowerCase(Locale.getDefault()).contains(newText.orEmpty().toLowerCase(Locale.getDefault()))
+                    }
+                }
+
+                // Update the adapter with the filtered data
+                adapter.updateFilter(filteredData)
+
+                // Show or hide textDataNotFound based on whether data is found
+                textDataNotFound.visibility = if (filteredData.isEmpty()) View.VISIBLE else View.GONE
+
                 return true
             }
-        })// Initialize the adapter with an empty list for now
+        })
         adapter = LemburAdapter(lemburList)
         recyclerView.adapter = adapter
 
@@ -78,8 +98,17 @@ class DaftarLemburFragment : Fragment(), FilterDialogFragment.FilterDialogListen
     private fun showFilterDialog() {
         val fragmentManager = childFragmentManager
         val (uniqueBulanList, uniqueTahunList) = getBulanAndTahunLists()
-        val filterDialogFragment = FilterDialogFragment.newInstance(uniqueBulanList, uniqueTahunList)
-        filterDialogFragment.show(fragmentManager, "com.example.pertaminaapp.fragment.FilterDialogFragment")
+        val filterDialogFragment = FilterDialogFragment.newInstance(
+            uniqueBulanList,
+            uniqueTahunList,
+            lastSelectedStatus, // Pass the last selected values as arguments
+            lastSelectedBulan,
+            lastSelectedTahun
+        )
+        filterDialogFragment.show(
+            fragmentManager,
+            "com.example.pertaminaapp.fragment.FilterDialogFragment"
+        )
     }
 
     private fun applyFilters() {
@@ -89,8 +118,14 @@ class DaftarLemburFragment : Fragment(), FilterDialogFragment.FilterDialogListen
                     (selectedBulan == null || extractMonth(selectedBulan!!) == extractBulan(item.tanggal)) &&
                     (selectedTahun == null || selectedTahun == extractTahun(item.tanggal))
         }
-        // Update the adapter with the filtered list
-        adapter.updateFilter(filteredLemburList)
+        if (filteredLemburList.isEmpty()) {
+            adapter.updateFilter(emptyList())
+            textDataNotFound.visibility = View.VISIBLE
+        } else {
+            textDataNotFound.visibility = View.GONE
+            // Update the adapter with the filtered list
+            adapter.updateFilter(filteredLemburList)
+        }
     }
 
     private fun extractMonth(date: String): String {
@@ -132,8 +167,14 @@ class DaftarLemburFragment : Fragment(), FilterDialogFragment.FilterDialogListen
         this.selectedBulan = if (selectedBulan.isBlank()) null else selectedBulan
         this.selectedTahun = if (selectedTahun.isBlank()) null else selectedTahun
 
-        // Apply the filters
+        // Apply the filters to the originalLemburList
         applyFilters()
+        isFilterApplied = true // Filters are applied
+
+        // Save the last selected filter values
+        lastSelectedStatus = selectedStatus
+        lastSelectedBulan = selectedBulan
+        lastSelectedTahun = selectedTahun
     }
 
     private fun getBulanAndTahunLists(): Pair<List<String>, List<String>> {
@@ -205,11 +246,12 @@ class DaftarLemburFragment : Fragment(), FilterDialogFragment.FilterDialogListen
                         lemburList.clear()
                         lemburList.addAll(tempList)
                         adapter.notifyDataSetChanged()
-                        if (lemburList.isEmpty()) {
-                            textDataNotFound.visibility = View.VISIBLE
-                        } else {
-                            textDataNotFound.visibility = View.GONE
-                        }
+                            if (lemburList.isEmpty()) {
+                                textDataNotFound.visibility = View.VISIBLE
+                            } else {
+                                textDataNotFound.visibility = View.GONE
+                            }
+                        isFilterApplied = false
                         setLoading(false)
                     }
                 } else {

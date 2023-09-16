@@ -90,14 +90,36 @@
                     android:cursorVisible="false"
                     android:inputType="none"/>
             </com.google.android.material.textfield.TextInputLayout>
-            <Button
-                android:id="@+id/buttonApply"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_gravity="center"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_marginBottom="10dp"
-                android:text="Apply"/>
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/buttonApply"
+                    android:layout_width="90dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="10dp"
+                    android:backgroundTint="#0cff00"
+                    android:textColor="@color/black"
+                    android:layout_marginBottom="20dp"
+                    android:text="Apply" />
+
+                <Button
+                    android:id="@+id/buttonReset"
+                    android:layout_width="90dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="30dp"
+                    android:backgroundTint="#ff0000"
+                    android:textColor="@color/black"
+                    android:layout_marginBottom="20dp"
+                    android:text="Reset" />
+            </LinearLayout>
+
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 </LinearLayout>

@@ -47,11 +47,11 @@ class DaftarDinasFragment : Fragment() {
         textDataNotFound = view.findViewById(R.id.text_data_not_found)
         // Initialize the adapter with an empty list for now
 
-        val filterIcon = view.findViewById<ImageView>(R.id.filter_icon)
-        filterIcon.setOnClickListener {
-            // Show the filter dialog when the icon is clicked
-            showFilterDialog()
-        }
+//        val filterIcon = view.findViewById<ImageView>(R.id.filter_icon)
+//        filterIcon.setOnClickListener {
+//            // Show the filter dialog when the icon is clicked
+//            showFilterDialog()
+//        }
         searchView = view.findViewById(R.id.search_view)
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -71,12 +71,12 @@ class DaftarDinasFragment : Fragment() {
         fetchDataFromMySQL()
         return view
     }
-    private fun showFilterDialog() {
-        val fragmentManager = childFragmentManager
-        val (uniqueBulanList, uniqueTahunList) = getBulanAndTahunLists()
-        val filterDialogFragment = FilterDialogFragment.newInstance(uniqueBulanList, uniqueTahunList)
-        filterDialogFragment.show(fragmentManager, "com.example.pertaminaapp.fragment.FilterDialogFragment")
-    }
+//    private fun showFilterDialog() {
+//        val fragmentManager = childFragmentManager
+//        val (uniqueBulanList, uniqueTahunList) = getBulanAndTahunLists()
+//        val filterDialogFragment = FilterDialogFragment.newInstance(uniqueBulanList, uniqueTahunList)
+//        filterDialogFragment.show(fragmentManager, "com.example.pertaminaapp.fragment.FilterDialogFragment")
+//    }
 
     private fun getBulanAndTahunLists(): Pair<List<String>, List<String>> {
         val bulanList = ArrayList<String>()
