@@ -10,6 +10,7 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pertaminaapp.R
 import com.example.pertaminaapp.model.DinasItem
+import com.example.pertaminaapp.model.LemburItem
 import java.util.Locale
 
 class DinasAdapter(private val dinasList: List<DinasItem>) :
@@ -73,6 +74,9 @@ class DinasAdapter(private val dinasList: List<DinasItem>) :
             }
         }
     }
-
+    fun updateFilter(filteredDinasList: List<DinasItem>) {
+        this.filteredDinasList = filteredDinasList
+        notifyDataSetChanged()
+    }
     override fun getItemCount() = filteredDinasList.size
 }

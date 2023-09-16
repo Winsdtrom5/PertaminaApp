@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pertaminaapp.R
 import com.example.pertaminaapp.adapter.DinasAdapter
+import com.example.pertaminaapp.adapter.LemburAdapter
 import com.example.pertaminaapp.connection.eworks
 import com.example.pertaminaapp.model.DinasItem
 import com.example.pertaminaapp.model.LemburItem
@@ -22,20 +23,30 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONArray
+import org.json.JSONObject
+import java.io.InputStream
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.SQLException
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class DaftarDinasFragment : Fragment() {
+class DaftarDinasFragment : Fragment(), FilterDialogFragment.FilterDialogListener   {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: DinasAdapter
     private val dinasList: MutableList<DinasItem> = mutableListOf()
     private var kode: String? = null
     private lateinit var searchView:SearchView
     private lateinit var textDataNotFound: TextView
-
+    private var lastSelectedStatus: String? = null
+    private var lastSelectedKota: String? = null
+    private var lastSelectedTahun: String? = null
+    private var isFilterApplied = false
+    private var selectedStatus: String? = null
+    private var selectedKota: String? = null
+    private var selectedTahun: String? = null
+    private var filteredDinasList: List<DinasItem> = mutableListOf()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -45,13 +56,16 @@ class DaftarDinasFragment : Fragment() {
         recyclerView = view.findViewById(R.id.rv1)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         textDataNotFound = view.findViewById(R.id.text_data_not_found)
+        val kotaDataList = readAndParseKotaJson()
+        val provinsiDataList = readAndParseProvinsiJson()
+        // Combine and display the data
+        val combinedDataList = combineAndFormatData(kotaDataList, provinsiDataList)
         // Initialize the adapter with an empty list for now
-
-//        val filterIcon = view.findViewById<ImageView>(R.id.filter_icon)
-//        filterIcon.setOnClickListener {
-//            // Show the filter dialog when the icon is clicked
-//            showFilterDialog()
-//        }
+        val filterIcon = view.findViewById<ImageView>(R.id.filter_icon)
+        filterIcon.setOnClickListener {
+            // Show the filter dialog when the icon is clicked
+            showFilterDialog()
+        }
         searchView = view.findViewById(R.id.search_view)
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -59,11 +73,27 @@ class DaftarDinasFragment : Fragment() {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                // Apply filtering by calling the getFilter() method
-                adapter.getFilter().filter(newText)
+                val filteredData = if (isFilterApplied) {
+                    // Search in filteredLemburList
+                    filteredDinasList.filter { item ->
+                        item.pekerjaan.toLowerCase(Locale.getDefault()).contains(newText.orEmpty().toLowerCase(Locale.getDefault()))
+                    }
+                } else {
+                    // Search in lemburList
+                    dinasList.filter { item ->
+                        item.pekerjaan.toLowerCase(Locale.getDefault()).contains(newText.orEmpty().toLowerCase(Locale.getDefault()))
+                    }
+                }
+
+                // Update the adapter with the filtered data
+                adapter.updateFilter(filteredData)
+
+                // Show or hide textDataNotFound based on whether data is found
+                textDataNotFound.visibility = if (filteredData.isEmpty()) View.VISIBLE else View.GONE
+
                 return true
             }
-        })// Initialize the adapter with an empty list for now
+        })
         adapter = DinasAdapter(dinasList)
         recyclerView.adapter = adapter
 
@@ -71,12 +101,74 @@ class DaftarDinasFragment : Fragment() {
         fetchDataFromMySQL()
         return view
     }
-//    private fun showFilterDialog() {
-//        val fragmentManager = childFragmentManager
-//        val (uniqueBulanList, uniqueTahunList) = getBulanAndTahunLists()
-//        val filterDialogFragment = FilterDialogFragment.newInstance(uniqueBulanList, uniqueTahunList)
-//        filterDialogFragment.show(fragmentManager, "com.example.pertaminaapp.fragment.FilterDialogFragment")
-//    }
+    private fun showFilterDialog() {
+        val fragmentManager = childFragmentManager
+
+        val (uniqueBulanList, uniqueTahunList) = getBulanAndTahunLists()
+
+        // Assuming you have access to the `kotaList` and `dinasList` variables
+        val kotaList = readAndParseKotaJson()
+        val provinsiList = readAndParseProvinsiJson()
+
+        val combinedDataMap = combineAndFormatData(kotaList, provinsiList)
+
+        val autoCompleteKota = combinedDataMap.keys.toTypedArray()
+
+        val filterDinasFragment = FilterDinasFragment.newInstance(
+            autoCompleteKota.toList(), // Pass the user-entered city names
+            uniqueTahunList,
+            lastSelectedKota,
+            lastSelectedTahun,
+            lastSelectedStatus
+        )
+
+        filterDinasFragment.show(fragmentManager, "com.example.pertaminaapp.fragment.FilterDinasFragment")
+    }
+
+
+    private fun readAndParseKotaJson(): List<JSONObject> {
+        val kotaDataList = mutableListOf<JSONObject>()
+        try {
+            val inputStream: InputStream = resources.openRawResource(R.raw.kota)
+            val size: Int = inputStream.available()
+            val buffer = ByteArray(size)
+            inputStream.read(buffer)
+            inputStream.close()
+
+            val json = String(buffer, Charsets.UTF_8)
+
+            val jsonArray = JSONArray(json)
+            for (i in 0 until jsonArray.length()) {
+                val jsonObject = jsonArray.getJSONObject(i)
+                kotaDataList.add(jsonObject)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return kotaDataList
+    }
+
+    private fun readAndParseProvinsiJson(): List<JSONObject> {
+        val provinsiDataList = mutableListOf<JSONObject>()
+        try {
+            val inputStream: InputStream = resources.openRawResource(R.raw.provinsi)
+            val size: Int = inputStream.available()
+            val buffer = ByteArray(size)
+            inputStream.read(buffer)
+            inputStream.close()
+
+            val json = String(buffer, Charsets.UTF_8)
+
+            val jsonArray = JSONArray(json)
+            for (i in 0 until jsonArray.length()) {
+                val jsonObject = jsonArray.getJSONObject(i)
+                provinsiDataList.add(jsonObject)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return provinsiDataList
+    }
 
     private fun getBulanAndTahunLists(): Pair<List<String>, List<String>> {
         val bulanList = ArrayList<String>()
@@ -114,6 +206,54 @@ class DaftarDinasFragment : Fragment() {
             .map { indonesianMonthNames[it.toInt() - 1] }
 
         return Pair(sortedBulanList, tahunList)
+    }
+
+    private fun combineAndFormatData(
+        kotaList: List<JSONObject>,
+        provinsiList: List<JSONObject>
+    ): Map<String, String> {
+        val combinedDataMap = mutableMapOf<String, String>()
+
+        for (dinasItem in dinasList) {
+            try {
+                val kotaNamesString = dinasItem.tujuan
+                // Check if the kotaNamesString contains commas
+                if (kotaNamesString.contains(",")) {
+                    // Split the string by commas to get individual city names
+                    val kotaNames = kotaNamesString.split(",")
+                    // Iterate through the list of city names
+                    for (kotaName in kotaNames) {
+                        val cleanedKotaName = kotaName.trim().lowercase(Locale.getDefault())
+                        val matchingProvinsis = provinsiList.filter {
+                            it.optString("Nama_Daerah").lowercase(Locale.getDefault())
+                                .contains(cleanedKotaName)
+                        }
+                        if (matchingProvinsis.isNotEmpty()) {
+                            // Add all matching provinsi names with the user-entered city name
+                            matchingProvinsis.forEach { provinsi ->
+                                combinedDataMap[cleanedKotaName] = provinsi.optString("Kota")
+                            }
+                        }
+                    }
+                } else {
+                    val cleanedKotaName = kotaNamesString.trim().toLowerCase(Locale.getDefault())
+                    val matchingProvinsis = provinsiList.filter {
+                        it.optString("Nama_Daerah").toLowerCase(Locale.getDefault())
+                            .contains(cleanedKotaName)
+                    }
+                    if (matchingProvinsis.isNotEmpty()) {
+                        // Add all matching provinsi names with the user-entered city name
+                        matchingProvinsis.forEach { provinsi ->
+                            combinedDataMap[cleanedKotaName] = provinsi.optString("Kota")
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("Error", "Error parsing city name: $e")
+            }
+        }
+
+        return combinedDataMap
     }
 
 
@@ -176,5 +316,43 @@ class DaftarDinasFragment : Fragment() {
         } else {
             loadingLayout?.visibility = View.INVISIBLE
         }
+    }
+
+    override fun onFilterApplied(selectedStatus: String, selectedKota: String, selectedTahun: String) {
+        this.selectedStatus = if (selectedStatus.isBlank()) null else selectedStatus
+        this.selectedKota = if (selectedKota.isBlank()) null else selectedKota
+        this.selectedTahun = if (selectedTahun.isBlank()) null else selectedTahun
+
+        // Apply the filters to the originalLemburList
+        applyFilters()
+        isFilterApplied = true // Filters are applied
+
+        // Save the last selected filter values
+        lastSelectedStatus = selectedStatus
+        lastSelectedKota = selectedKota
+        lastSelectedTahun = selectedTahun
+    }
+
+    private fun applyFilters() {
+        // Filter your data based on the selected filters
+        filteredDinasList = dinasList.filter { item ->
+            (selectedStatus == null || item.status == selectedStatus) &&
+//                    (selectedKota == null || extractMonth(selectedBulan!!) == extractBulan(item.tanggal)) &&
+                    (selectedTahun == null || selectedTahun == extractTahun(item.tanggalberangkat))
+        }
+        if (filteredDinasList.isEmpty()) {
+            adapter.updateFilter(emptyList())
+            textDataNotFound.visibility = View.VISIBLE
+        } else {
+            textDataNotFound.visibility = View.GONE
+            // Update the adapter with the filtered list
+            adapter.updateFilter(filteredDinasList)
+        }
+    }
+
+    private fun extractTahun(date: String): String {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val parsedDate = dateFormat.parse(date)
+        return SimpleDateFormat("yyyy", Locale.getDefault()).format(parsedDate)
     }
 }

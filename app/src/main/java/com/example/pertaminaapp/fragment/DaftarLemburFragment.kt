@@ -246,11 +246,11 @@ class DaftarLemburFragment : Fragment(), FilterDialogFragment.FilterDialogListen
                         lemburList.clear()
                         lemburList.addAll(tempList)
                         adapter.notifyDataSetChanged()
-                            if (lemburList.isEmpty()) {
-                                textDataNotFound.visibility = View.VISIBLE
-                            } else {
-                                textDataNotFound.visibility = View.GONE
-                            }
+                        if (lemburList.isEmpty()) {
+                            textDataNotFound.visibility = View.VISIBLE
+                        } else {
+                            textDataNotFound.visibility = View.GONE
+                        }
                         isFilterApplied = false
                         setLoading(false)
                     }
