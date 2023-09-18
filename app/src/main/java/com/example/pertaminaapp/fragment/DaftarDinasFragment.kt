@@ -32,7 +32,7 @@ import java.sql.SQLException
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class DaftarDinasFragment : Fragment(), FilterDialogFragment.FilterDialogListener   {
+class DaftarDinasFragment : Fragment(), FilterDinasFragment.FilterDialogListener   {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: DinasAdapter
     private val dinasList: MutableList<DinasItem> = mutableListOf()
@@ -42,9 +42,11 @@ class DaftarDinasFragment : Fragment(), FilterDialogFragment.FilterDialogListene
     private var lastSelectedStatus: String? = null
     private var lastSelectedKota: String? = null
     private var lastSelectedTahun: String? = null
+    private var lastSelectedBulan: String? = null
     private var isFilterApplied = false
     private var selectedStatus: String? = null
     private var selectedKota: String? = null
+    private var selectedBulan: String? = null
     private var selectedTahun: String? = null
     private var filteredDinasList: List<DinasItem> = mutableListOf()
     override fun onCreateView(
@@ -115,11 +117,13 @@ class DaftarDinasFragment : Fragment(), FilterDialogFragment.FilterDialogListene
         val autoCompleteKota = combinedDataMap.keys.toTypedArray()
 
         val filterDinasFragment = FilterDinasFragment.newInstance(
-            autoCompleteKota.toList(), // Pass the user-entered city names
+            autoCompleteKota.toList(),
+            uniqueBulanList,
             uniqueTahunList,
             lastSelectedKota,
             lastSelectedTahun,
-            lastSelectedStatus
+            lastSelectedStatus,
+            lastSelectedBulan
         )
 
         filterDinasFragment.show(fragmentManager, "com.example.pertaminaapp.fragment.FilterDinasFragment")
@@ -171,41 +175,71 @@ class DaftarDinasFragment : Fragment(), FilterDialogFragment.FilterDialogListene
     }
 
     private fun getBulanAndTahunLists(): Pair<List<String>, List<String>> {
-        val bulanList = ArrayList<String>()
-        val tahunList = ArrayList<String>()
+        val bulanSet = HashSet<String>()
+        val tahunSet = HashSet<String>()
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-
-        for (dinasItem in dinasList) {
-            try {
-                val tanggalbrangkat = dateFormat.parse(dinasItem.tanggalberangkat)
-                val tanggalpulang = dateFormat.parse(dinasItem.tanggalpulang)
-                val bulanNumber = SimpleDateFormat("MM", Locale.getDefault()).format(tanggalbrangkat)
-                val bulanNumber2 = SimpleDateFormat("MM", Locale.getDefault()).format(tanggalpulang)
-                val tahunberangakt = SimpleDateFormat("yyyy", Locale.getDefault()).format(tanggalbrangkat)
-                val tahunpulang = SimpleDateFormat("yyyy", Locale.getDefault()).format(tanggalpulang)
-
-                if (!bulanList.contains(bulanNumber) && !bulanList.contains(bulanNumber2)) {
-                    bulanList.add(bulanNumber)
-                    bulanList.add(bulanNumber2)
-                }
-                if (!tahunList.contains(tahunberangakt) && !tahunList.contains(tahunpulang)) {
-                    tahunList.add(tahunberangakt)
-                    tahunList.add(tahunpulang)
-                }
-            } catch (e: Exception) {
-                Log.e("Error", "Error parsing date: ${dinasItem.tanggalberangkat}")
-            }
-        }
-
-        // Convert bulan numbers to Indonesian month names and sort them
         val indonesianMonthNames = listOf(
             "Januari", "Februari", "Maret", "April", "Mei", "Juni",
             "Juli", "Agustus", "September", "Oktober", "November", "Desember"
         )
-        val sortedBulanList = bulanList.sortedBy { it.toInt() }
-            .map { indonesianMonthNames[it.toInt() - 1] }
+        for (dinasItem in dinasList) {
+            try {
+                val tanggalberangkat = dateFormat.parse(dinasItem.tanggalberangkat)
+                val tanggalpulang = dateFormat.parse(dinasItem.tanggalpulang)
+                val bulanNumber = SimpleDateFormat("MM", Locale.getDefault()).format(tanggalberangkat)
+                val bulanNumber2 = SimpleDateFormat("MM", Locale.getDefault()).format(tanggalpulang)
+                val tahunberangkat = SimpleDateFormat("yyyy", Locale.getDefault()).format(tanggalberangkat)
+                val tahunpulang = SimpleDateFormat("yyyy", Locale.getDefault()).format(tanggalpulang)
 
-        return Pair(sortedBulanList, tahunList)
+                if (!bulanSet.contains(bulanNumber)) {
+                    bulanSet.add(bulanNumber)
+                }
+
+                if (!bulanSet.contains(bulanNumber2) && bulanNumber != bulanNumber2) {
+                    bulanSet.add(bulanNumber2)
+                }
+
+                if (!tahunSet.contains(tahunberangkat)) {
+                    tahunSet.add(tahunberangkat)
+                }
+
+                if (!tahunSet.contains(tahunpulang) && tahunberangkat != tahunpulang) {
+                    tahunSet.add(tahunpulang)
+                }
+
+            } catch (e: Exception) {
+                Log.e("Error", "Error parsing date: ${dinasItem.tanggalberangkat}")
+            }
+        }
+        val sortedBulanList = bulanSet
+            .toList()
+            .sortedBy { it.toInt() }
+            .map { indonesianMonthNames[it.toInt() - 1] }
+        return Pair(sortedBulanList, tahunSet.toList())
+    }
+
+
+    private fun extractMonth(date: String): String {
+        val monthNameToNumber = mapOf(
+            "Januari" to "01",
+            "Februari" to "02",
+            "Maret" to "03",
+            "April" to "04",
+            "Mei" to "05",
+            "Juni" to "06",
+            "Juli" to "07",
+            "Agustus" to "08",
+            "September" to "09",
+            "Oktober" to "10",
+            "November" to "11",
+            "Desember" to "12"
+        )
+
+        // Check if the provided month name exists in the mapping
+        val monthNumber = monthNameToNumber[date]
+
+        // Use the mapping to convert the month name to 2-digit format
+        return monthNumber ?: "00"
     }
 
     private fun combineAndFormatData(
@@ -213,7 +247,7 @@ class DaftarDinasFragment : Fragment(), FilterDialogFragment.FilterDialogListene
         provinsiList: List<JSONObject>
     ): Map<String, String> {
         val combinedDataMap = mutableMapOf<String, String>()
-
+        val idKotaMapping = mutableMapOf<Int, Int>()
         for (dinasItem in dinasList) {
             try {
                 val kotaNamesString = dinasItem.tujuan
@@ -225,26 +259,64 @@ class DaftarDinasFragment : Fragment(), FilterDialogFragment.FilterDialogListene
                     for (kotaName in kotaNames) {
                         val cleanedKotaName = kotaName.trim().lowercase(Locale.getDefault())
                         val matchingProvinsis = provinsiList.filter {
-                            it.optString("Nama_Daerah").lowercase(Locale.getDefault())
+                            it.optString("Kota").lowercase(Locale.getDefault())
                                 .contains(cleanedKotaName)
                         }
                         if (matchingProvinsis.isNotEmpty()) {
                             // Add all matching provinsi names with the user-entered city name
                             matchingProvinsis.forEach { provinsi ->
-                                combinedDataMap[cleanedKotaName] = provinsi.optString("Kota")
+                                val provinsi2 = matchingProvinsis.first()
+                                val provinsiName = provinsi2.optString("Kota")
+                                combinedDataMap[provinsiName] = provinsiName
+                            }
+                        }else{
+                            val matchingKotas = kotaList.filter {
+                                it.optString("Nama_Daerah").lowercase(Locale.getDefault())
+                                    .contains(cleanedKotaName)
+                            }
+                            matchingKotas.forEach { kotaItem ->
+                                val idKota = kotaItem.optInt("ID_Kota")
+                                val idProvinsi = idKotaMapping[idKota]
+                                if (idProvinsi != null) {
+                                    val provinsiObject = provinsiList.find {
+                                        it.optInt("Id") == idProvinsi
+                                    }
+                                    val provinsiName = provinsiObject?.optString("Kota") ?: ""
+                                    val kota = "${provinsiObject?.optString("Nama_Daerah")} - $provinsiName"
+                                    combinedDataMap[kota] = kota
+                                }
                             }
                         }
                     }
                 } else {
                     val cleanedKotaName = kotaNamesString.trim().toLowerCase(Locale.getDefault())
                     val matchingProvinsis = provinsiList.filter {
-                        it.optString("Nama_Daerah").toLowerCase(Locale.getDefault())
+                        it.optString("Kota").toLowerCase(Locale.getDefault())
                             .contains(cleanedKotaName)
                     }
                     if (matchingProvinsis.isNotEmpty()) {
                         // Add all matching provinsi names with the user-entered city name
                         matchingProvinsis.forEach { provinsi ->
-                            combinedDataMap[cleanedKotaName] = provinsi.optString("Kota")
+                            val provinsi2 = matchingProvinsis.first()
+                            val provinsiName = provinsi2.optString("Kota")
+                            combinedDataMap[provinsiName] = provinsiName
+                        }
+                    }else{
+                        val matchingKotas = kotaList.filter {
+                            it.optString("Nama_Daerah").lowercase(Locale.getDefault())
+                                .contains(cleanedKotaName)
+                        }
+                        matchingKotas.forEach { kotaItem ->
+                            val idKota = kotaItem.optInt("ID_Kota")
+                            val idProvinsi = idKotaMapping[idKota]
+                            if (idProvinsi != null) {
+                                val provinsiObject = provinsiList.find {
+                                    it.optInt("ID_Provinsi") == idProvinsi
+                                }
+                                val provinsiName = provinsiObject?.optString("Kota") ?: ""
+                                val kota = "${provinsiObject?.optString("Nama_Daerah")} - $provinsiName"
+                                combinedDataMap[kota] = kota
+                            }
                         }
                     }
                 }
@@ -318,11 +390,11 @@ class DaftarDinasFragment : Fragment(), FilterDialogFragment.FilterDialogListene
         }
     }
 
-    override fun onFilterApplied(selectedStatus: String, selectedKota: String, selectedTahun: String) {
+    override fun onFilterApplied(selectedStatus: String, selectedKota: String, selectedTahun: String,selectedBulan : String) {
         this.selectedStatus = if (selectedStatus.isBlank()) null else selectedStatus
         this.selectedKota = if (selectedKota.isBlank()) null else selectedKota
         this.selectedTahun = if (selectedTahun.isBlank()) null else selectedTahun
-
+        this.selectedBulan = if (selectedBulan.isBlank()) null else selectedBulan
         // Apply the filters to the originalLemburList
         applyFilters()
         isFilterApplied = true // Filters are applied
@@ -331,15 +403,26 @@ class DaftarDinasFragment : Fragment(), FilterDialogFragment.FilterDialogListene
         lastSelectedStatus = selectedStatus
         lastSelectedKota = selectedKota
         lastSelectedTahun = selectedTahun
+        lastSelectedBulan = selectedBulan
     }
-
+    private fun extractBulan(date: String): String {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val parsedDate = dateFormat.parse(date)
+        return SimpleDateFormat("MM", Locale.getDefault()).format(parsedDate)
+    }
     private fun applyFilters() {
-        // Filter your data based on the selected filters
+        val kotaAutocompleteMap = createAutocompleteMap()
         filteredDinasList = dinasList.filter { item ->
-            (selectedStatus == null || item.status == selectedStatus) &&
-//                    (selectedKota == null || extractMonth(selectedBulan!!) == extractBulan(item.tanggal)) &&
-                    (selectedTahun == null || selectedTahun == extractTahun(item.tanggalberangkat))
+            selectedStatus == null || item.status == selectedStatus
+            selectedBulan == null ||
+                    (extractMonth(selectedBulan!!) == extractBulan(item.tanggalberangkat) || extractMonth(selectedBulan!!) == extractBulan(item.tanggalpulang))
+            selectedTahun == null ||
+                    (selectedTahun == extractTahun(item.tanggalberangkat) || selectedTahun == extractTahun(item.tanggalpulang))
+            selectedKota == null ||
+                    (kotaAutocompleteMap[item.tujuan]?.equals(selectedKota, ignoreCase = true) == true)
+
         }
+
         if (filteredDinasList.isEmpty()) {
             adapter.updateFilter(emptyList())
             textDataNotFound.visibility = View.VISIBLE
@@ -349,6 +432,73 @@ class DaftarDinasFragment : Fragment(), FilterDialogFragment.FilterDialogListene
             adapter.updateFilter(filteredDinasList)
         }
     }
+
+    private fun createAutocompleteMap(): Map<String, String> {
+        val autocompleteMap = mutableMapOf<String, String>()
+        val provinsiList = mutableListOf<JSONObject>()
+        val kotaList = mutableListOf<JSONObject>()
+
+        for (dinasItem in dinasList) {
+            val kotaNamesString = dinasItem.tujuan
+            if (kotaNamesString.contains(",")) {
+                val kotaNames = kotaNamesString.split(",")
+                for (kotaName in kotaNames) {
+                    val cleanedKotaName = kotaName.trim().lowercase(Locale.getDefault())
+                    val matchingProvinsis = provinsiList.filter {
+                        it.optString("Kota").lowercase(Locale.getDefault())
+                            .contains(cleanedKotaName)
+                    }
+                    if (matchingProvinsis.isNotEmpty()) {
+                        matchingProvinsis.forEach { provinsi ->
+                            val provinsiName = provinsi.optString("Kota")
+                            autocompleteMap[cleanedKotaName] = provinsiName
+                        }
+                    } else {
+                        val matchingKotas = kotaList.filter {
+                            it.optString("Nama_Daerah").lowercase(Locale.getDefault())
+                                .contains(cleanedKotaName)
+                        }
+                        matchingKotas.forEach { kotaItem ->
+                            val idKota = kotaItem.optInt("ID_Kota")
+                            val provinsiObject = provinsiList.find {
+                                it.optInt("Id") == idKota
+                            }
+                            val provinsiName = provinsiObject?.optString("Kota") ?: ""
+                            autocompleteMap[cleanedKotaName] = provinsiName
+                        }
+                    }
+                }
+            } else {
+                val cleanedKotaName = kotaNamesString.trim().toLowerCase(Locale.getDefault())
+                val matchingProvinsis = provinsiList.filter {
+                    it.optString("Kota").toLowerCase(Locale.getDefault())
+                        .contains(cleanedKotaName)
+                }
+                if (matchingProvinsis.isNotEmpty()) {
+                    matchingProvinsis.forEach { provinsi ->
+                        val provinsiName = provinsi.optString("Kota")
+                        autocompleteMap[cleanedKotaName] = provinsiName
+                    }
+                } else {
+                    val matchingKotas = kotaList.filter {
+                        it.optString("Nama_Daerah").lowercase(Locale.getDefault())
+                            .contains(cleanedKotaName)
+                    }
+                    matchingKotas.forEach { kotaItem ->
+                        val idKota = kotaItem.optInt("ID_Kota")
+                        val provinsiObject = provinsiList.find {
+                            it.optInt("ID_Provinsi") == idKota
+                        }
+                        val provinsiName = provinsiObject?.optString("Kota") ?: ""
+                        autocompleteMap[cleanedKotaName] = provinsiName
+                    }
+                }
+            }
+        }
+
+        return autocompleteMap
+    }
+
 
     private fun extractTahun(date: String): String {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())

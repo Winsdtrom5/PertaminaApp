@@ -64,6 +64,7 @@ class PekerjaActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelec
     private lateinit var tolak : TextView
     private lateinit var revisi: TextView
     private lateinit var tunda : TextView
+    private lateinit var navbar: LinearLayout
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPekerjaBinding.inflate(layoutInflater)
@@ -78,6 +79,8 @@ class PekerjaActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelec
         drawer =findViewById(R.id.drawer_layout)
         setSupportActionBar(toolbar);
         loading = findViewById(R.id.layout_loading)
+        val headerView = navigationView.getHeaderView(0)
+        navbar = headerView.findViewById(R.id.navbar)
         getBundle()
         navigationView.setNavigationItemSelectedListener(this)
         setDashboard(kode)
@@ -99,6 +102,13 @@ class PekerjaActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelec
             R.string.navigation_drawer_open,R.string.navigation_drawer_close)
         drawer.addDrawerListener(toggle)
         toggle.syncState()
+        navbar.setOnClickListener {
+            val intent = Intent(this,ProfileActivity::class.java)
+            val mBundle = Bundle()
+            mBundle.putString("kode", kode)
+            intent.putExtra("user", mBundle)
+            startActivity(intent)
+        }
     }
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -320,7 +330,6 @@ class PekerjaActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelec
             }
         }
     }
-
 
     private fun getName(kode:String){
         GlobalScope.launch(Dispatchers.IO) {

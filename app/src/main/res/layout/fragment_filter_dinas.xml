@@ -43,7 +43,30 @@
                     android:background="#E5E4E2"
                     android:layout_height="match_parent"
                     android:textSize="15dp"
-                    android:hint="Pilih Kota" />
+                    android:hint="Pilih Kota"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:cursorVisible="false"
+                    android:inputType="none"/>
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/bulan"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:elevation="2dp"
+                android:layout_margin="15dp"
+                android:layout_width="match_parent"
+                android:layout_height="60dp">
+                <AutoCompleteTextView
+                    android:id="@+id/acbulan"
+                    android:layout_width="match_parent"
+                    android:background="#E5E4E2"
+                    android:layout_height="match_parent"
+                    android:textSize="15dp"
+                    android:hint="Pilih Bulan"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:cursorVisible="false"
+                    android:inputType="none"/>
             </com.google.android.material.textfield.TextInputLayout>
             <!-- Dropdown (Spinner) -->
             <com.google.android.material.textfield.TextInputLayout
