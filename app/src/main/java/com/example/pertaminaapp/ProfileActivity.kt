@@ -1,11 +1,16 @@
 package com.example.pertaminaapp
 
+import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.view.WindowManager
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import com.example.pertaminaapp.connection.eworks
 import com.example.pertaminaapp.databinding.ActivityProfileBinding
@@ -25,15 +30,26 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var binding: ActivityProfileBinding
     private lateinit var kode : String
     private lateinit var mbunlde : Bundle
+    private lateinit var loading : LinearLayout
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        loading = findViewById(R.id.layout_loading)
         getBundle()
         setData(kode)
     }
 
+    override fun onBackPressed() {
+        // Handle the "Home" item click (replace with your desired activity)
+        val intent = Intent(this@ProfileActivity, PekerjaActivity::class.java)
+        val mBundle = Bundle()
+        mBundle.putString("kode", kode)
+        intent.putExtra("user", mBundle)
+        startActivity(intent)
+    }
     private fun setData(kodePekerja : String){
+        setLoading(true)
         GlobalScope.launch(Dispatchers.IO) {
             // Check the username and password in the database
             val connection = eworks.getConnection()
@@ -57,7 +73,7 @@ class ProfileActivity : AppCompatActivity() {
                         val gender = resultSet.getString("jenis_kelamin")
                         val masaKerja = resultSet.getString("masa_kerja")
                         val formattedMasaKerja = "$masaKerja Tahun"
-                        val fungsi = resultSet.getString("fungsi")
+                        val fungsi = resultSet.getString("fungsi_pengguna")
                         val tamat = resultSet.getString("pendidikan")
                         val pendidikan = "$tamat $jurusan"
                         val pola = resultSet.getString("pola_kerja")
@@ -93,6 +109,7 @@ class ProfileActivity : AppCompatActivity() {
                             pjpTV.setText(pjp)
                             kode.setText(kodePekerja)
                             pekerjaan.setText(jabatan)
+                            setLoading(false)
                         }
                     } else {
                         runOnUiThread {
@@ -110,7 +127,13 @@ class ProfileActivity : AppCompatActivity() {
                     }
                 }
             } else {
-                Toast.makeText(this@ProfileActivity,"Tidak dapat tersambung", Toast.LENGTH_SHORT).show()
+                runOnUiThread {
+                    Toast.makeText(
+                        this@ProfileActivity,
+                        "Tidak dapat tersambung",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         }
     }
@@ -123,6 +146,19 @@ class ProfileActivity : AppCompatActivity() {
             }
         }catch(e: NullPointerException) {
             kode = "Guest"
+        }
+    }
+
+    private fun setLoading(isLoading:Boolean){
+        if(isLoading){
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+            )
+            loading.visibility = View.VISIBLE
+        }else{
+            window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+            loading.visibility = View.INVISIBLE
         }
     }
 }

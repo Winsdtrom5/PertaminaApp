@@ -97,6 +97,15 @@ class DinasActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
             }
         }
     }
+
+    override fun onBackPressed() {
+        // Handle the "Home" item click (replace with your desired activity)
+        val intent = Intent(this@DinasActivity, PekerjaActivity::class.java)
+        val mBundle = Bundle()
+        mBundle.putString("kode", kode)
+        intent.putExtra("user", mBundle)
+        startActivity(intent)
+    }
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menupanduan -> {

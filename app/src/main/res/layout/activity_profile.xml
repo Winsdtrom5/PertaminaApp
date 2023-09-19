@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".MainActivity">
+    tools:context=".ProfileActivity"
+    android:background="@drawable/bg1"
+    android:orientation="horizontal">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:orientation="vertical"
         android:layout_marginTop="10dp"
         android:padding="15dp">
@@ -52,7 +58,7 @@
                         android:id="@+id/namaAkun"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Ambatukam"
+                        android:text="NULL"
                         android:textAlignment="center"
                         android:textSize="20sp"
                         android:textColor="@color/black"
@@ -96,7 +102,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
                         android:layout_marginTop="30dp"
-                        android:text="BIO"
+                        android:text="NULL"
                         android:textColor="@color/black"
                         android:textSize="15sp" />
                 </RelativeLayout>
@@ -160,7 +166,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textColor="#6E6C6C"
-                                android:text="Gmail"
+                                android:text="NULL"
                                 android:textSize="15sp"
                                 android:layout_alignParentEnd="true"
                                 android:textStyle="bold"/>
@@ -184,7 +190,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textColor="#6E6C6C"
-                                android:text="Ahmad Tukam"
+                                android:text="NULL"
                                 android:textSize="15sp"
                                 android:layout_alignParentEnd="true"
                                 android:textStyle="bold"/>
@@ -209,7 +215,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textColor="#6E6C6C"
-                                android:text="male"
+                                android:text="NULL"
                                 android:textSize="15sp"
                                 android:layout_alignParentEnd="true"
                                 android:textStyle="bold"/>
@@ -234,7 +240,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textColor="#6E6C6C"
-                                android:text="21"
+                                android:text="NULL"
                                 android:textSize="15sp"
                                 android:layout_alignParentEnd="true"
                                 android:textStyle="bold"/>
@@ -259,7 +265,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textColor="#6E6C6C"
-                                android:text="23131"
+                                android:text="NULL"
                                 android:textSize="15sp"
                                 android:layout_alignParentEnd="true"
                                 android:textStyle="bold"/>
@@ -284,7 +290,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentEnd="true"
-                                android:text="1234"
+                                android:text="NULL"
                                 android:textColor="#6E6C6C"
                                 android:textSize="15sp"
                                 android:textStyle="bold" />
@@ -308,7 +314,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textColor="#6E6C6C"
-                                android:text="1234"
+                                android:text="NULL"
                                 android:textSize="15sp"
                                 android:layout_alignParentEnd="true"
                                 android:textStyle="bold"/>
@@ -332,7 +338,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textColor="#6E6C6C"
-                                android:text="1234"
+                                android:text="NULL"
                                 android:textSize="15sp"
                                 android:layout_alignParentEnd="true"
                                 android:textStyle="bold"/>
@@ -357,7 +363,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textColor="#6E6C6C"
-                                android:text="Gmail"
+                                android:text="NULL"
                                 android:textSize="15sp"
                                 android:layout_alignParentEnd="true"
                                 android:textStyle="bold"/>
@@ -381,7 +387,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textColor="#6E6C6C"
-                                android:text="Gmail"
+                                android:text="NULL"
                                 android:textSize="15sp"
                                 android:layout_alignParentEnd="true"
                                 android:textStyle="bold"/>
@@ -405,7 +411,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textColor="#6E6C6C"
-                                android:text="1234"
+                                android:text="NULL"
                                 android:textSize="15sp"
                                 android:layout_alignParentEnd="true"
                                 android:textStyle="bold"/>
@@ -420,11 +426,16 @@
             android:layout_height="match_parent"
             android:textColor="@color/black"
             android:backgroundTint="#D3D3D3"
-            android:layout_margin="25dp"
+            android:layout_margin="15dp"
+            android:layout_marginBottom="20dp"
             android:text="Change Password"
             android:textSize="15sp"
             android:gravity="center"
             android:layout_alignParentStart="true"
             android:textStyle="bold"/>
     </LinearLayout>
-</ScrollView>
+    <include
+        android:id="@+id/layout_loading"
+        layout="@layout/layout_loading"
+        android:visibility="gone"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

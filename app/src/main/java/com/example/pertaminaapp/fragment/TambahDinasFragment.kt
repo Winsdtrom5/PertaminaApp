@@ -19,6 +19,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import android.Manifest
+import android.net.Uri
+import android.provider.OpenableColumns
+import android.widget.Toast
 import com.example.pertaminaapp.R
 import com.google.android.material.textfield.TextInputLayout
 import org.json.JSONArray
@@ -33,6 +36,7 @@ class TambahDinasFragment : Fragment() {
         private const val CAMERA_REQUEST_CODE = 2
     }
     private val CAMERA_PERMISSION_CODE = 101
+    private val PDF_REQUEST_CODE = 123
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -86,47 +90,13 @@ class TambahDinasFragment : Fragment() {
 
         uploadButton.setOnClickListener {
             // Show a dialog or options to select the source (gallery or camera)
-            showFilePickerDialog()
+            pickPdfFile()
         }
     }
-    private fun showFilePickerDialog() {
-        val items = arrayOf("Choose from Gallery", "Take a Photo")
-        AlertDialog.Builder(requireContext())
-            .setTitle("Select a File")
-            .setItems(items) { _, which ->
-                when (which) {
-                    0 -> pickImageFromGallery()
-                    1 -> checkPermissioncamera()
-                }
-            }
-            .show()
-    }
-
-    private fun checkPermissioncamera(){
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            // Permission is already granted, open the camera
-            takePhoto()
-        } else {
-            // Permission is not granted, request it from the user
-            requestCameraPermission()
-        }
-    }
-    private fun requestCameraPermission() {
-        ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_CODE
-        )
-    }
-    private fun pickImageFromGallery() {
-        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(intent, GALLERY_REQUEST_CODE)
-    }
-
-    private fun takePhoto() {
-        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        if (intent.resolveActivity(requireActivity().packageManager) != null) {
-            startActivityForResult(intent, CAMERA_REQUEST_CODE)
-        } else {
-            // Handle the case where no camera app is available
-        }
+    private fun pickPdfFile() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.type = "application/pdf"
+        startActivityForResult(intent, PDF_REQUEST_CODE)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -134,19 +104,55 @@ class TambahDinasFragment : Fragment() {
 
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
-                GALLERY_REQUEST_CODE -> {
-                    // Handle the selected image from the gallery
-                    val selectedImageUri = data?.data
-                    // Process the selected image here
-                }
-                CAMERA_REQUEST_CODE -> {
-                    // Handle the captured photo from the camera
-                    val photo = data?.extras?.get("data") as Bitmap?
-                    // Process the captured photo here
+                PDF_REQUEST_CODE -> {
+                    // Handle the selected PDF file
+                    val selectedPdfUri = data?.data
+                    if (selectedPdfUri != null) {
+                        // Extract the file name from the URI
+                        val fileName = getFileName(selectedPdfUri)
+
+                        // Set the file name on your button or TextView
+                        val uploadButton = view?.findViewById<Button>(R.id.uploadButton)
+                        uploadButton?.text = fileName
+
+                        // Process the selected PDF file here
+                    }
                 }
             }
         }
     }
+
+    private fun getFileName(uri: Uri): String {
+        var result: String? = null
+        if (uri.scheme == "content") {
+            val cursor = requireActivity().contentResolver.query(uri, null, null, null, null)
+            cursor?.use {
+                // Check if DISPLAY_NAME column exists in the cursor
+                val displayNameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (displayNameIndex != -1 && it.moveToFirst()) {
+                    result = it.getString(displayNameIndex)
+                }
+            }
+        }
+        if (result == null) {
+            result = uri.path
+            val cut = result?.lastIndexOf('/')
+            if (cut != null && cut != -1) {
+                result = result?.substring(cut + 1)
+            }
+        }
+
+        // Check the file's MIME type
+        val mimeType = requireActivity().contentResolver.getType(uri)
+        if (mimeType != null && mimeType != "application/pdf") {
+            // Display a Toast message for non-PDF files
+            Toast.makeText(requireContext(), "Selected file is not a PDF", Toast.LENGTH_SHORT).show()
+        }
+
+        return result ?: "unknown.pdf"
+    }
+
+
     private fun readAndParseKotaJson(): List<JSONObject> {
         val kotaDataList = mutableListOf<JSONObject>()
         try {
