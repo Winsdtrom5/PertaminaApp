@@ -1,24 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.pertaminaapp" >
+    package="com.example.pertaminaapp">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
 
+    <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
-    <uses-feature
-        android:name="android.hardware.camera"
-        android:required="false" />
-
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
@@ -37,10 +33,21 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PertaminaApp"
-        tools:targetApi="31" >
+        tools:targetApi="31">
+        <activity
+            android:name=".LaporanActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ReviewActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
         <activity
             android:name=".ProfileActivity"
-            android:theme="@style/AppTheme" >
+            android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -48,7 +55,7 @@
         <activity
             android:name=".DinasActivity"
             android:exported="false"
-            android:theme="@style/AppTheme" >
+            android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -56,7 +63,7 @@
         <activity
             android:name=".LemburActivity"
             android:exported="false"
-            android:theme="@style/AppTheme" >
+            android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -64,7 +71,7 @@
         <activity
             android:name=".PekerjaActivity"
             android:exported="false"
-            android:theme="@style/AppTheme" >
+            android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -75,20 +82,39 @@
         <activity
             android:name=".AtasanActivity"
             android:exported="false"
-            android:theme="@style/AppTheme" >
+            android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".MainActivity"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.pdfprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/pdf_file_paths" />
+        </provider>
     </application>
 
 </manifest>

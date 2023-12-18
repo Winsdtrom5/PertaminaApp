@@ -61,9 +61,5 @@
                     android:textStyle="bold"/>
             </LinearLayout>
         </LinearLayout>
-
-        <!-- Add more views for item content as needed -->
-
     </androidx.cardview.widget.CardView>
-
 </FrameLayout>

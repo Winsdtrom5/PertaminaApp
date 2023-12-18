@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "pertaminaapp-405903",
+  "private_key_id": "37b53eed3225d0c2f728ca4d73b4245f8c636da5",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCg7v8G2wWsJgy9\n+TvguMF52BNgOBFUk2spdbNYSx6Rxe71i8p93ava2ANxPvhwd1lM8pf2i2vEkeZK\nSwjhWkAmd+JfSPQc7gnFmAAJT5u62dsEZ/AqpjjiefU3wf7WE4FSN8868QsX+z0A\nJN613Nv0WH6m1Xx/rgbKXTcs1FKiG2wPbCJespO5eEeKirbddgc14jvUD+Vxz/9g\nWVXkF7s6ABVhOl2Qrl5m5loj4cllg2WR0kk47zDbhtciL1tOnhkTUe5vqpktIB7g\nUYsNd7qW1cEcdQz8ut8/jwGxIKJj4ZOz9yWhp/EYlDiCIBHA/u5g4ramje8dOxpL\n6PYg4UJnAgMBAAECggEABP46ngqAQThnqiKSylobxp1URzv2GFr/4X1sCbqVluLp\nPb0PP0XNZdt7NTGa9leoRvblOBpYnEoFNxuKNFO0gdJeYk5vzyX42k8+UQujQpzX\nwBSUIv6dQomTeMi6u1xHkDbNuypstFsbKBH8xu+0nf7Q5HmN2fhFmv8MDdwDOab2\nLJs3gp3uvUSqp6pgICzv4lI19vVxWWuWFJS2NCa+j+VDHQsHvvw7A9mduWHioG1w\nunV5Vo7wKVhd/2quZ8ZeLOlaqaycLmirW8GszRIC4FnjKSZQlWqLH1EpmD9pU+ND\n6dPYxhvb3mUhxsYnSyZ3dmOrmEnrb3lDvshvuGKqoQKBgQDeEha7EeQyOqI+I5Vt\nQrKLOCGE0gTAf9itstpRlTXw0bb56wRGwwEHsdS9lxv+ArNI0MFUFQGY5Ro0p7MH\nrxk4f8ivkr8WUPSJyu4BO0zyTWlPxxgEuG7S6/5BaXpTutJlJRakSKWCTSxeL2UX\nlfsuKbS6ikl1g91MF9nwOj6QQwKBgQC5haLGwSAhTWO6S0xFFi5ox5pnoGsgY1Pg\nrlHYYr0weZkjOq8F7j8h/IBf6E9yH9MoA5nL1y1gh7tyqb06+RBMcFfHIH6qmcFE\nSPZaeNexqa8l6ejREmHNpR0kfOe+4pBMTRpCp34SLtNvZw0j+JmqHfDMcNm+wOU0\nw+ZAYjjlDQKBgQDKwZ9JbBt7FPffXmPnX3dfD3/jIlI+ZDw009Drnh2i5Ad5he/g\nn9lH6kEAXYCsWlDRUfDCUW+k5sEXhGo8wM15PYrBa23W9VFgogzOyRMHRFC8C17N\nqItfPyNlG+YZnsDMoqFanA2pu8aftAxMDZ9J1cBydSJ/Dke2WyycXsGSuwKBgF95\nbYa5ls5spFkYLR0UyDd2GXkg7mCRnXXwYABq+A/9VBj0N2Rm8qiL6Ijy5gfGZwWd\nrMVhbGHUGFxvDApQaNndqt64U1d6nyKEJfvzWpV8zL1HPmByBFEvmurPOPhcYoRR\n3aTVy6SR4o/fSbzsUDBjDiw4G2b2oD5iXpldswf1AoGAATSXT4cPhZ37JE98JOOW\ntdENgwJZSAikpn5mfc9PAxgiAAEx9QTsG1kSIdkVx7X0mocYfNx+y0z1vxRtkY7m\nlQfLNnKZCRL8ZYAtIsJe41Ij5sWkX3DjqtpBiES5SXObZhlBe4P+h/B2rmHH2mcH\ncpf66+Rb0romlu7XXybeKEc=\n-----END PRIVATE KEY-----\n",
+  "client_email": "pertamina@pertaminaapp-405903.iam.gserviceaccount.com",
+  "client_id": "112162753636313557342",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/pertamina%40pertaminaapp-405903.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

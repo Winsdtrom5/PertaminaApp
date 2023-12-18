@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -20,6 +21,7 @@ import com.example.pertaminaapp.connection.eworks
 import com.example.pertaminaapp.model.LemburItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.sql.PreparedStatement
@@ -33,7 +35,7 @@ class DaftarLemburFragment : Fragment(), FilterDialogFragment.FilterDialogListen
     private lateinit var adapter: LemburAdapter
     private val lemburList: MutableList<LemburItem> = mutableListOf()
     private var kode: String? = null
-    private lateinit var searchView: SearchView
+    private lateinit var searchText: EditText
     private var selectedStatus: String? = null
     private var selectedBulan: String? = null
     private var selectedTahun: String? = null
@@ -53,41 +55,29 @@ class DaftarLemburFragment : Fragment(), FilterDialogFragment.FilterDialogListen
         recyclerView = view.findViewById(R.id.rv1)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 // Inside DaftarLemburFragment onCreateView
-        searchView = view.findViewById<SearchView>(R.id.search_view)
+        searchText= view.findViewById<EditText>(R.id.search_edit_text)
         textDataNotFound = view.findViewById<TextView>(R.id.not_found)
         val filterIcon = view.findViewById<ImageView>(R.id.filter_icon)
         filterIcon.setOnClickListener {
             // Show the filter dialog when the icon is clicked
             showFilterDialog()
         }
-        searchView = view.findViewById(R.id.search_view)
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
-            }
+        val imageView = view.findViewById<ImageView>(R.id.search_icon)
+        imageView.setOnClickListener {
+            val searchText = searchText.text.toString().toLowerCase(Locale.getDefault())
 
-            override fun onQueryTextChange(newText: String?): Boolean {
-                val filteredData = if (isFilterApplied) {
-                    // Search in filteredLemburList
-                    filteredLemburList.filter { item ->
-                        item.pekerjaan.toLowerCase(Locale.getDefault()).contains(newText.orEmpty().toLowerCase(Locale.getDefault()))
-                    }
-                } else {
-                    // Search in lemburList
-                    lemburList.filter { item ->
-                        item.pekerjaan.toLowerCase(Locale.getDefault()).contains(newText.orEmpty().toLowerCase(Locale.getDefault()))
-                    }
-                }
+            // Launch a coroutine to perform the database search
+            CoroutineScope(Dispatchers.Main).launch {
+                // Perform a database search and get the filtered data
+                val filteredData = performDatabaseSearch(searchText) // Replace with your database search function
 
                 // Update the adapter with the filtered data
                 adapter.updateFilter(filteredData)
 
                 // Show or hide textDataNotFound based on whether data is found
                 textDataNotFound.visibility = if (filteredData.isEmpty()) View.VISIBLE else View.GONE
-
-                return true
             }
-        })
+        }
         adapter = LemburAdapter(lemburList)
         recyclerView.adapter = adapter
 
@@ -95,6 +85,37 @@ class DaftarLemburFragment : Fragment(), FilterDialogFragment.FilterDialogListen
         fetchDataFromMySQL()
         return view
     }
+    private suspend fun performDatabaseSearch(searchText: String): List<LemburItem> {
+        return withContext(Dispatchers.IO) {
+            val filteredData = mutableListOf<LemburItem>()
+
+            // Execute a database query based on the searchText
+            // Replace this with your database query logic using JDBC
+            val connection = eworks.getConnection()
+            val query = "SELECT pekerjaan,tanggal,jammasuk, jamkeluar FROM spkl WHERE nomor LIKE ?"
+            val preparedQuery = connection?.prepareStatement(query)
+            if (preparedQuery != null) {
+                preparedQuery.setString(1, "%$searchText%")
+            }
+            val resultSet = preparedQuery?.executeQuery()
+            if (resultSet != null) {
+                while (resultSet.next()) {
+                    // Populate filteredData with the results
+                    val lemburItem = LemburItem(
+                        resultSet.getString("pekerjaan"),
+                        resultSet.getString("tanggal"),
+                        resultSet.getString("jammasuk"),
+                        resultSet.getString("jamkeluar"),
+                        resultSet.getString("jamkeluar")
+                    )
+                    filteredData.add(lemburItem)
+                }
+            }
+
+            filteredData
+        }
+    }
+
     private fun showFilterDialog() {
         val fragmentManager = childFragmentManager
         val (uniqueBulanList, uniqueTahunList) = getBulanAndTahunLists()

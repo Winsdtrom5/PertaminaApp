@@ -1,0 +1,373 @@
+<!-- res/layout/dialog_filter.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="75dp"
+    android:layout_marginTop="30dp"
+    android:layout_marginEnd="75dp"
+    android:layout_marginBottom="30dp"
+    android:orientation="vertical"
+    tools:context=".fragment.DetailLemburFragment">
+    <!-- Add filter options here, such as EditText for text input -->
+
+    <!-- Dropdown (Spinner) -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="250dp"
+        android:layout_height="match_parent"
+        android:elevation="8dp"
+        app:cardCornerRadius="20dp"
+        app:cardUseCompatPadding="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fontFamily="@font/font1"
+                android:gravity="center"
+                android:text="Detail Lembur"
+                android:textColor="@color/black"
+                android:textSize="30dp"
+                android:textStyle="bold" />
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="15dp"
+                        android:text="Nomor Permintaan :"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/Nomor"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginBottom="15dp"
+                        android:elevation="2dp">
+
+                        <EditText
+                            android:id="@+id/edNomor"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="#E5E4E2"
+                            android:focusable="false"
+                            android:hint="Nama"
+                            android:textSize="15dp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="15dp"
+                        android:text="Tanggal Pengajuan :"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/TanggalPengajuan"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginBottom="15dp"
+                        android:elevation="2dp">
+
+                        <EditText
+                            android:id="@+id/edTanggalPengajuan"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="#E5E4E2"
+                            android:focusable="false"
+                            android:hint="Nama"
+                            android:textSize="15dp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="15dp"
+                        android:text="Nama Pekerja :"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/Nama"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginBottom="15dp"
+                        android:elevation="2dp">
+
+                        <EditText
+                            android:id="@+id/edNama"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="#E5E4E2"
+                            android:focusable="false"
+                            android:hint="Nama"
+                            android:textSize="15dp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="15dp"
+                        android:text="Posisi Pekerja :"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/Posisi"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginBottom="15dp"
+                        android:elevation="2dp">
+
+                        <EditText
+                            android:id="@+id/edPosisi"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="#E5E4E2"
+                            android:focusable="false"
+                            android:hint="Nama"
+                            android:textSize="15dp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="15dp"
+                        android:text="Pekerjaan :"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/Pekerjaan"
+                        android:layout_width="match_parent"
+                        android:layout_height="120dp"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginBottom="15dp"
+                        android:elevation="2dp">
+
+                        <EditText
+                            android:id="@+id/edPekerjaan"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="#E5E4E2"
+                            android:focusable="false"
+                            android:hint="Pekerjaan"
+                            android:inputType="textMultiLine"
+                            android:textSize="15dp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="15dp"
+                        android:text="Jam Mulai :"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/JamMulai"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginBottom="15dp"
+                        android:elevation="2dp">
+
+                        <EditText
+                            android:id="@+id/edJamMulai"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="#E5E4E2"
+                            android:focusable="false"
+                            android:hint="Nama"
+                            android:textSize="15dp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="15dp"
+                        android:text="Jam Selesai :"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/JamSelesai"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginBottom="15dp"
+                        android:elevation="2dp">
+
+                        <EditText
+                            android:id="@+id/edJamSelesai"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="#E5E4E2"
+                            android:focusable="false"
+                            android:hint="Nama"
+                            android:textSize="15dp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="15dp"
+                        android:text="Uang lembur :"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/Uanglembur"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginBottom="15dp"
+                        android:elevation="2dp">
+
+                        <EditText
+                            android:id="@+id/edUanglembur"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="#E5E4E2"
+                            android:focusable="false"
+                            android:hint="Nama"
+                            android:textSize="15dp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <TextView
+                        android:id="@+id/bukti"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="15dp"
+                        android:text="Bukti lembur :"
+                        android:textSize="15sp"
+                        android:visibility="gone"
+                        android:textStyle="bold" />
+
+                    <com.github.barteksc.pdfviewer.PDFView
+                        android:id="@+id/BuktiLemburpdf"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:visibility="gone"
+                        android:layout_marginBottom="15dp"
+                        android:elevation="2dp">
+                    </com.github.barteksc.pdfviewer.PDFView>
+                    <ImageView
+                        android:id="@+id/BuktiLemburimage"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginBottom="15dp"
+                        android:visibility="gone"
+                        android:elevation="2dp">
+                    </ImageView>
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/Balasan"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginBottom="15dp"
+                        android:elevation="2dp"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+                        <AutoCompleteTextView
+                            android:id="@+id/edBalasan"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="#E5E4E2"
+                            android:focusable="false"
+                            android:clickable="true"
+                            android:inputType="none"
+                            android:hint="Balasan"
+                            android:textSize="15dp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <TextView
+                        android:id="@+id/keterangantxt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="15dp"
+                        android:text="Keterangan :"
+                        android:textSize="15sp"
+                        android:visibility="gone"
+                        android:textStyle="bold" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/Keterangan"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginBottom="15dp"
+                        android:visibility="gone"
+                        android:elevation="2dp">
+
+                        <EditText
+                            android:id="@+id/edKeterangan"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="#E5E4E2"
+                            android:focusable="false"
+                            android:hint="Nama"
+                            android:textSize="15dp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="10dp"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/buttonApply"
+                            android:layout_width="90dp"
+                            android:layout_height="50dp"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginBottom="20dp"
+                            android:backgroundTint="#0cff00"
+                            android:text="Save"
+                            android:textColor="@color/black" />
+
+                        <Button
+                            android:id="@+id/buttonReset"
+                            android:layout_width="90dp"
+                            android:layout_height="50dp"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="30dp"
+                            android:layout_marginBottom="20dp"
+                            android:backgroundTint="#ff0000"
+                            android:text="Cancel"
+                            android:textColor="@color/black" />
+                    </LinearLayout>
+                </LinearLayout>
+            </ScrollView>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</LinearLayout>

@@ -25,7 +25,8 @@ import com.example.pertaminaapp.connection.eworks
 import com.example.pertaminaapp.databinding.ActivityDinasBinding
 import com.example.pertaminaapp.fragment.DaftarDinasFragment
 import com.example.pertaminaapp.fragment.TambahDinasFragment
-import com.example.pertaminaapp.fragment.TambahLemburFragment
+import com.example.pertaminaapp.model.HolidayList
+import com.example.pertaminaapp.model.User
 import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -33,6 +34,7 @@ import kotlinx.coroutines.launch
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.SQLException
+import java.util.Calendar
 
 class DinasActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private lateinit var binding: ActivityDinasBinding
@@ -43,7 +45,9 @@ class DinasActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
     private lateinit var loading : LinearLayout
     private lateinit var spinner : Spinner
     private lateinit var kode : String
+    private lateinit var user: User
     private lateinit var mbunlde : Bundle
+    private lateinit var holidayList: HolidayList
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDinasBinding.inflate(layoutInflater)
@@ -57,7 +61,6 @@ class DinasActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         loading = findViewById(R.id.layout_loading)
         getBundle()
         navigationView.setNavigationItemSelectedListener(this)
-        getName(kode)
         getSupportActionBar()!!.setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener {
             if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -81,7 +84,8 @@ class DinasActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
                 // Handle item selection here and show the corresponding fragment
                 // Inside your activity's code
                 val bundle = Bundle()
-                bundle.putString("kode", kode)
+                bundle.putParcelable("user", user)
+                bundle.putParcelable("holidayList", holidayList)
                 when (position) {
                     0 -> {
                         showTambahDinasFragment(bundle)
@@ -102,7 +106,8 @@ class DinasActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         // Handle the "Home" item click (replace with your desired activity)
         val intent = Intent(this@DinasActivity, PekerjaActivity::class.java)
         val mBundle = Bundle()
-        mBundle.putString("kode", kode)
+        mBundle.putParcelable("user", user)
+        mBundle.putParcelable("holidayList", holidayList)
         intent.putExtra("user", mBundle)
         startActivity(intent)
     }
@@ -126,27 +131,30 @@ class DinasActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
             R.id.menuHome -> {
                 // Handle the "Home" item click (replace with your desired activity)
                 val intent = Intent(this@DinasActivity, PekerjaActivity::class.java)
-                val mBundle = Bundle()
-                mBundle.putString("kode", kode)
-                intent.putExtra("user", mBundle)
+                val userBundle = Bundle()
+                userBundle.putParcelable("user", user) // Serialize the user object to a Bundle
+                userBundle.putParcelable("holidayList", holidayList)
+                intent.putExtra("user_bundle", userBundle)
                 startActivity(intent)
             }
             R.id.menulembur -> {
                 Log.d("Test","Clicked")
                 // Handle the "Lembur" item click (replace with your desired activity)
                 val intent = Intent(this@DinasActivity, LemburActivity::class.java)
-                val mBundle = Bundle()
-                mBundle.putString("kode", kode)
-                intent.putExtra("user", mBundle)
+                val userBundle = Bundle()
+                userBundle.putParcelable("user", user)
+                userBundle.putParcelable("holidayList", holidayList)// Serialize the user object to a Bundle
+                intent.putExtra("user_bundle", userBundle)
                 startActivity(intent)
             }
             R.id.menudinas -> {
                 Log.d("Test","Clicked")
                 // Handle the "Lembur" item click (replace with your desired activity)
                 val intent = Intent(this@DinasActivity, DinasActivity::class.java)
-                val mBundle = Bundle()
-                mBundle.putString("kode", kode)
-                intent.putExtra("user", mBundle)
+                val userBundle = Bundle()
+                userBundle.putParcelable("user", user) // Serialize the user object to a Bundle
+                userBundle.putParcelable("holidayList", holidayList)
+                intent.putExtra("user_bundle", userBundle)
                 startActivity(intent)
             }
             R.id.menulogout -> {
@@ -161,13 +169,20 @@ class DinasActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         return true
     }
     private fun getBundle(){
-        try{
-            mbunlde = intent?.getBundleExtra("user")!!
-            if(mbunlde != null){
-                kode =mbunlde.getString("kode")!!
+        try {
+            mbunlde = intent?.getBundleExtra("user_bundle")!!
+            if (mbunlde != null) {
+                user = mbunlde.getParcelable("user")!!
             }
-        }catch(e: NullPointerException) {
-            kode = "Guest"
+            val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+            val receivedHolidayList = intent.getParcelableExtra<HolidayList>("$currentYear")
+
+            // Check if the receivedHolidayList is not null
+            if (receivedHolidayList != null) {
+                holidayList = receivedHolidayList
+            }
+        } catch (e: NullPointerException) {
+            // Handle the case where the bundle or user object is not found
         }
     }
 

@@ -1,6 +1,6 @@
 package com.example.pertaminaapp.model
 
-data class LemburItem(
+data class  LemburItem(
     val pekerjaan: String,
     val tanggal: String,
     val jammasuk: String,

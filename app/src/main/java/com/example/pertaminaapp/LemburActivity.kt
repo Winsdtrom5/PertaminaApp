@@ -1,5 +1,6 @@
 package com.example.pertaminaapp
 
+import com.example.pertaminaapp.fragment.TambahLemburFragment
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
@@ -24,14 +25,17 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.example.pertaminaapp.connection.eworks
 import com.example.pertaminaapp.databinding.ActivityLemburBinding
 import com.example.pertaminaapp.fragment.DaftarLemburFragment
-import com.example.pertaminaapp.fragment.TambahLemburFragment
+import com.example.pertaminaapp.model.HolidayList
+import com.example.pertaminaapp.model.User
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.FirebaseApp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.SQLException
+import java.util.Calendar
 
 class LemburActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelectedListener {
     private lateinit var binding : ActivityLemburBinding
@@ -41,13 +45,16 @@ class LemburActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelect
     private lateinit var navigationView : NavigationView
     private lateinit var loading : LinearLayout
     private lateinit var spinner : Spinner
-    private lateinit var kode : String
+    private lateinit var user: User
     private lateinit var mbunlde : Bundle
+    private lateinit var holidayList: HolidayList
+    private var currentYear = Calendar.getInstance().get(Calendar.YEAR)
     private var dataFetched = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLemburBinding.inflate(layoutInflater)
         setContentView(binding.root)
+//        FirebaseApp.initializeApp(this)
         supportActionBar?.hide()
         spinner = binding.dropdown
         toolbar = findViewById(R.id.toolbar)
@@ -57,7 +64,7 @@ class LemburActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelect
         loading = findViewById(R.id.layout_loading)
         getBundle()
         navigationView.setNavigationItemSelectedListener(this)
-        getName(kode)
+        getName(user)
         getSupportActionBar()!!.setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener {
             if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -80,14 +87,15 @@ class LemburActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelect
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 // Handle item selection here and show the corresponding fragment
                 // Inside your activity's code
-                val bundle = Bundle()
-                bundle.putString("kode", kode)
+                val userBundle = Bundle()
+                userBundle.putParcelable("user", user)
+                userBundle.putParcelable("holidayList", holidayList)
                 when (position) {
                     0 -> {
-                        showTambahLemburFragment(bundle)
+                        showTambahLemburFragment(userBundle)
                     }
                     1 -> {
-                        showDaftarLemburFragment(bundle)
+                        showDaftarLemburFragment(userBundle)
                     }
                 }
             }
@@ -117,27 +125,30 @@ class LemburActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelect
             R.id.menuHome -> {
                 // Handle the "Home" item click (replace with your desired activity)
                 val intent = Intent(this@LemburActivity, PekerjaActivity::class.java)
-                val mBundle = Bundle()
-                mBundle.putString("kode", kode)
-                intent.putExtra("user", mBundle)
+                val userBundle = Bundle()
+                userBundle.putParcelable("user", user) // Serialize the user object to a Bundle
+                userBundle.putParcelable("holidayList", holidayList)
+                intent.putExtra("user_bundle", userBundle)
                 startActivity(intent)
             }
             R.id.menulembur -> {
                 Log.d("Test","Clicked")
                 // Handle the "Lembur" item click (replace with your desired activity)
                 val intent = Intent(this@LemburActivity, LemburActivity::class.java)
-                val mBundle = Bundle()
-                mBundle.putString("kode", kode)
-                intent.putExtra("user", mBundle)
+                val userBundle = Bundle()
+                userBundle.putParcelable("user", user)
+                userBundle.putParcelable("holidayList", holidayList)// Serialize the user object to a Bundle
+                intent.putExtra("user_bundle", userBundle)
                 startActivity(intent)
             }
             R.id.menudinas -> {
                 Log.d("Test","Clicked")
                 // Handle the "Lembur" item click (replace with your desired activity)
                 val intent = Intent(this@LemburActivity, DinasActivity::class.java)
-                val mBundle = Bundle()
-                mBundle.putString("kode", kode)
-                intent.putExtra("user", mBundle)
+                val userBundle = Bundle()
+                userBundle.putParcelable("user", user) // Serialize the user object to a Bundle
+                userBundle.putParcelable("holidayList", holidayList)
+                intent.putExtra("user_bundle", userBundle)
                 startActivity(intent)
             }
             R.id.menulogout -> {
@@ -152,22 +163,31 @@ class LemburActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelect
         return true
     }
     private fun getBundle(){
-        try{
-            mbunlde = intent?.getBundleExtra("user")!!
-            if(mbunlde != null){
-                kode =mbunlde.getString("kode")!!
+        try {
+            mbunlde = intent?.getBundleExtra("user_bundle")!!
+            if (mbunlde != null) {
+                user = mbunlde.getParcelable("user")!!
             }
-        }catch(e: NullPointerException) {
-            kode = "Guest"
+            val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+            val receivedHolidayList = intent.getParcelableExtra<HolidayList>("$currentYear")
+
+            // Check if the receivedHolidayList is not null
+            if (receivedHolidayList != null) {
+                holidayList = receivedHolidayList
+            }
+        } catch (e: NullPointerException) {
+            // Handle the case where the bundle or user object is not found
         }
     }
 
     override fun onBackPressed() {
+        super.onBackPressed()
         // Handle the "Home" item click (replace with your desired activity)
         val intent = Intent(this@LemburActivity, PekerjaActivity::class.java)
-        val mBundle = Bundle()
-        mBundle.putString("kode", kode)
-        intent.putExtra("user", mBundle)
+        val userBundle = Bundle()
+        userBundle.putParcelable("user", user) // Serialize the user object to a Bundle
+        intent.putExtra("user_bundle", userBundle)
+        intent.putExtra("$currentYear", holidayList)
         startActivity(intent)
     }
     @SuppressLint("ObjectAnimatorBinding")
@@ -196,41 +216,8 @@ class LemburActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelect
         }
     }
 
-    private fun getName(kode:String){
-        setLoading(true)
-        GlobalScope.launch(Dispatchers.IO) {
-            // Check the username and password in the database
-            val connection = eworks.getConnection()
-            if (connection != null) {
-                try {
-                    val query = "SELECT * FROM biodata WHERE kode_pekerja = ?"
-                    val preparedStatement: PreparedStatement = connection.prepareStatement(query)
-                    preparedStatement.setString(1, kode)
-                    val resultSet: ResultSet = preparedStatement.executeQuery()
-                    if (resultSet.next()) {
-                        val nama = resultSet.getString("nama")
-                        Log.d("test",nama)
-                        setUsername(navigationView, nama)
-                    } else {
-                        runOnUiThread {
-                            Toast.makeText(this@LemburActivity, "Failed Connect To Database", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                } catch (e: SQLException) {
-                    e.printStackTrace()
-                } finally {
-                    // Close the connection in a finally block
-                    try {
-                        connection.close()
-                    } catch (e: SQLException) {
-                        e.printStackTrace()
-                    }
-                }
-            } else {
-                setLoading(false)
-                Toast.makeText(this@LemburActivity,"Tidak dapat tersambung", Toast.LENGTH_SHORT).show()
-            }
-        }
+    private fun getName(user:User){
+        setUsername(navigationView,user.nama)
     }
     private fun setLoading(isLoading:Boolean){
         if(isLoading){

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- divider_bottom_navigation.xml -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:top="-1dp"
+        android:right="-1dp"
+        android:left="-1dp">
+        <shape android:shape="rectangle">
+            <size android:height="1dp" />
+            <solid android:color="#D3D3D3" />
+        </shape>
+    </item>
+</layer-list>

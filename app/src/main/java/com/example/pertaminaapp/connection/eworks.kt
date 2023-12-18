@@ -7,9 +7,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 object eworks {
-    private val DB_URL = "jdbc:mysql://sql.freedb.tech:3306/freedb_eworks"
-    private val DB_USER = "freedb_Windstrom5"
-    private val DB_PASSWORD = "D8\$FPnTaX4Xt97u"
+    private val DB_URL = "jdbc:mysql://192.168.1.10:3306/eworks2"
+    private val DB_USER = "Angga"
+    private val DB_PASSWORD = "Angga123456"
 
     suspend fun getConnection(): Connection? = withContext(Dispatchers.IO) {
         var connection: Connection? = null

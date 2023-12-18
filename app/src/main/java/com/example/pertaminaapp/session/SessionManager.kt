@@ -41,8 +41,11 @@ class SessionManager(context: Context) {
     }
 
     // Logout the user and clear the session
-    fun logoutUser() {
-        editor.clear()
+    fun clearUserDataAndLogout() {
+        editor.remove(AUTH_TOKEN)
+        editor.remove(TOKEN_EXPIRATION)
+        editor.putBoolean(IS_LOGGED_IN, false)
+        editor.clear() // Clear all other data in SharedPreferences
         editor.apply()
     }
 }

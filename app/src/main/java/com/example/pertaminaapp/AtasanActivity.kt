@@ -106,6 +106,7 @@ class AtasanActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelect
     }
 
     override fun onBackPressed() {
+        super.onBackPressed()
         val builder: AlertDialog.Builder = AlertDialog.Builder(this@AtasanActivity)
         builder.setMessage("Want to log out?")
             .setNegativeButton("No", object : DialogInterface.OnClickListener {

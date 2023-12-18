@@ -27,28 +27,23 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import com.android.volley.AuthFailureError
-import com.android.volley.Response
-import com.android.volley.toolbox.StringRequest
 import com.example.pertaminaapp.connection.eworks
-import com.example.pertaminaapp.connection.lembur
-import com.example.pertaminaapp.databinding.ActivityAtasanBinding
 import com.example.pertaminaapp.databinding.ActivityPekerjaBinding
+import com.example.pertaminaapp.model.Holiday
+import com.example.pertaminaapp.model.HolidayList
+import com.example.pertaminaapp.model.User
 import com.example.pertaminaapp.session.SessionManager
+import com.example.pertaminaapp.session.SharedPreferencesManager
 import com.google.android.material.navigation.NavigationView
-import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.json.JSONObject
-import org.w3c.dom.Text
-import java.nio.charset.StandardCharsets
+import kotlinx.coroutines.withContext
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.SQLException
-import java.util.HashMap
-import kotlin.random.Random
+import java.util.Calendar
+
 
 class PekerjaActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelectedListener {
     private lateinit var binding : ActivityPekerjaBinding
@@ -58,12 +53,13 @@ class PekerjaActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelec
     private lateinit var toolbar: Toolbar
     private lateinit var navigationView : NavigationView
     private lateinit var loading : LinearLayout
-    private lateinit var kode : String
+    private lateinit var user: User
     private lateinit var mbunlde : Bundle
     private lateinit var setuju:TextView
     private lateinit var tolak : TextView
     private lateinit var revisi: TextView
     private lateinit var tunda : TextView
+    private lateinit var holidayList: HolidayList
     private lateinit var navbar: LinearLayout
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,10 +68,6 @@ class PekerjaActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelec
         supportActionBar?.hide()
         toolbar = findViewById(R.id.toolbar)
         navigationView = findViewById(R.id.nav_view)
-        setuju = binding.setuju
-        tolak = binding.tolak
-        revisi = binding.revisi
-        tunda = binding.tertunda
         drawer =findViewById(R.id.drawer_layout)
         setSupportActionBar(toolbar);
         loading = findViewById(R.id.layout_loading)
@@ -83,9 +75,8 @@ class PekerjaActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelec
         navbar = headerView.findViewById(R.id.navbar)
         getBundle()
         navigationView.setNavigationItemSelectedListener(this)
-        setDashboard(kode)
 //        startRealTimeUpdates()
-        getName(kode)
+        setDashboard(user)
         getSupportActionBar()!!.setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener {
             if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -102,15 +93,16 @@ class PekerjaActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelec
             R.string.navigation_drawer_open,R.string.navigation_drawer_close)
         drawer.addDrawerListener(toggle)
         toggle.syncState()
-        navbar.setOnClickListener {
-            val intent = Intent(this,ProfileActivity::class.java)
-            val mBundle = Bundle()
-            mBundle.putString("kode", kode)
-            intent.putExtra("user", mBundle)
-            startActivity(intent)
-        }
+//        navbar.setOnClickListener {
+//            val intent = Intent(this,ProfileActivity::class.java)
+//            val userBundle = Bundle()
+//            userBundle.putParcelable("user", user) // Serialize the user object to a Bundle
+//            intent.putExtra("user_bundle", userBundle)
+//            startActivity(intent)
+//        }
     }
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        val currentYear = Calendar.getInstance().get(Calendar.YEAR)
         when (item.itemId) {
             R.id.menupanduan -> {
                 val pdfFileName = "panduan_eworks.pdf"
@@ -137,27 +129,31 @@ class PekerjaActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelec
             R.id.menuHome -> {
                 // Handle the "Home" item click (replace with your desired activity)
                 val intent = Intent(this@PekerjaActivity, PekerjaActivity::class.java)
-                val mBundle = Bundle()
-                mBundle.putString("kode", kode)
-                intent.putExtra("user", mBundle)
+                val userBundle = Bundle()
+
+                userBundle.putParcelable("user", user) // Serialize the user object to a Bundle
+                intent.putExtra("user_bundle", userBundle)
+                intent.putExtra("$currentYear", holidayList)
                 startActivity(intent)
             }
             R.id.menulembur -> {
                 Log.d("Test","Clicked")
                 // Handle the "Lembur" item click (replace with your desired activity)
                 val intent = Intent(this@PekerjaActivity, LemburActivity::class.java)
-                val mBundle = Bundle()
-                mBundle.putString("kode", kode)
-                intent.putExtra("user", mBundle)
+                val userBundle = Bundle()
+                userBundle.putParcelable("user", user) // Serialize the user object to a Bundle
+                intent.putExtra("user_bundle", userBundle)
+                intent.putExtra("$currentYear", holidayList)
                 startActivity(intent)
             }
             R.id.menudinas -> {
                 Log.d("Test","Clicked")
                 // Handle the "Lembur" item click (replace with your desired activity)
                 val intent = Intent(this@PekerjaActivity, DinasActivity::class.java)
-                val mBundle = Bundle()
-                mBundle.putString("kode", kode)
-                intent.putExtra("user", mBundle)
+                val userBundle = Bundle()
+                userBundle.putParcelable("user", user) // Serialize the user object to a Bundle
+                intent.putExtra("user_bundle", userBundle)
+                intent.putExtra("$currentYear", holidayList)
                 startActivity(intent)
             }
             R.id.menulogout -> {
@@ -170,6 +166,13 @@ class PekerjaActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelec
                     })
                     .setPositiveButton("YES", object : DialogInterface.OnClickListener {
                         override fun onClick(dialogInterface: DialogInterface, i: Int) {
+                            // Get an instance of your SharedPreferencesManager
+                            val sharedPreferencesManager = SharedPreferencesManager(this@PekerjaActivity)
+
+                            // Clear user data (and other data if needed)
+                            sharedPreferencesManager.clearUserData()
+
+                            // Navigate to the MainActivity or login screen
                             startActivity(Intent(this@PekerjaActivity, MainActivity::class.java))
                         }
                     })
@@ -180,18 +183,60 @@ class PekerjaActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelec
         drawer.closeDrawer(GravityCompat.START)
         return true
     }
-    private fun getBundle(){
-        try{
-            mbunlde = intent?.getBundleExtra("user")!!
-            if(mbunlde != null){
-                kode =mbunlde.getString("kode")!!
+    private fun getBundle() {
+        try {
+            mbunlde = intent?.getBundleExtra("user_bundle")!!
+            if (mbunlde != null) {
+                user = mbunlde.getParcelable("user")!!
             }
-        }catch(e: NullPointerException) {
-            kode = "Guest"
+
+            val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+            val receivedHolidayList = intent.getParcelableExtra<HolidayList>("$currentYear")
+
+            // Check if the receivedHolidayList is not null
+            if (receivedHolidayList != null) {
+                holidayList = receivedHolidayList
+            } else {
+                // If the holidayList is null, fetch it from your data source
+                holidayList = getHoliday()
+            }
+        } catch (e: NullPointerException) {
+            // Handle the case where the bundle or user object is not found
         }
     }
 
+
+    private fun getHoliday(): HolidayList {
+        val holidays = mutableListOf<Holiday>()
+
+        try {
+            GlobalScope.launch(Dispatchers.IO) {
+                // Use your database access code here
+                val connection = eworks.getConnection()
+                if (connection != null) {
+                    try {
+                        val query = "SELECT * FROM libur WHERE YEAR(tanggal) = YEAR(CURDATE())"
+                        val statement = connection.prepareStatement(query)
+                        val resultSet = statement.executeQuery()
+
+                        while (resultSet.next()) {
+                            val tanggal = resultSet.getString("tanggal")
+                            val nama = resultSet.getString("keterangan")
+                            val holiday = Holiday(tanggal, nama)
+                            holidays.add(holiday)
+                        }
+                    } finally {
+                        connection.close()
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("Error", "Error fetching holidays: ${e.message}")
+        }
+        return HolidayList(holidays)
+    }
     override fun onBackPressed() {
+        super.onBackPressed()
         val builder: AlertDialog.Builder = AlertDialog.Builder(this@PekerjaActivity)
         builder.setMessage("Want to log out?")
             .setNegativeButton("No", object : DialogInterface.OnClickListener {
@@ -257,78 +302,112 @@ class PekerjaActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelec
         animatorSet.start()
     }
 
+//    private fun dashboard(user: User){
+//        setuju.text = user.approveCount
+//        tolak.text = user.rejectedCount
+//        revisi.text = user.returnCount
+//        tunda.text = user.pendingCount
+//        Log.d("User",user.approveCount)
+//        setUsername(navigationView, user.nama)
+//        setDashboard(user.kode)
+//    }
+
     private fun setUsername(navigationView: NavigationView, username: String) {
         println("status: $username")
         val navigationView = findViewById<NavigationView>(R.id.nav_view)
         val headerView = navigationView.getHeaderView(0)
         val usernameTextView = headerView.findViewById<TextView>(R.id.username_show)
         usernameTextView.text = username
-        runOnUiThread {
-            setLoading(false)
-        }
     }
 
-    private fun setDashboard(kode: String) {
-        setLoading(true)
-        GlobalScope.launch(Dispatchers.IO) {
-            val connection = eworks.getConnection()
-            if (connection != null) {
-                try {
-                    val query = """
-                    SELECT status FROM spkl WHERE kode_pekerja = ?
-                    UNION ALL
-                    SELECT status FROM spd WHERE kode_pekerja = ?
-                """.trimIndent()
+    private fun setDashboard(user: User) {
+//        GlobalScope.launch(Dispatchers.IO) {
+//            val connection = eworks.getConnection()
+//            if (connection != null) {
+//                try {
+//                    val query = """
+//                    SELECT status FROM spkl WHERE kode_pekerja = ?
+//                    UNION ALL
+//                    SELECT status FROM spd WHERE kode_pekerja = ?
+//                """.trimIndent()
+//
+//                    val preparedStatement: PreparedStatement = connection.prepareStatement(query)
+//                    preparedStatement.setString(1, kode)
+//                    preparedStatement.setString(2, kode)
+//
+//                    val resultSet: ResultSet = preparedStatement.executeQuery()
+//
+//                    var approveCount = 0
+//                    var divertedCount = 0
+//                    var returnCount = 0
+//                    var rejectedCount = 0
+//                    var pendingCount = 0
+//                    var reviewCount = 0
+//
+//                    while (resultSet.next()) {
+//                        val status = resultSet.getString("status")
+//                        when (status) {
+//                            "Returned" -> returnCount++
+//                            "Diverted" -> divertedCount++
+//                            "Rejected" -> rejectedCount++
+//                            "Pending" -> pendingCount++
+//                            "Review" -> reviewCount++
+//                            else -> approveCount++
+//                        }
+//                    }
+//
+//                    // Update UI on the main thread
+//                    runOnUiThread {
+//                        setuju.text = approveCount.toString()
+//                        tolak.text = rejectedCount.toString()
+//                        revisi.text = returnCount.toString()
+//                        tunda.text = pendingCount.toString()
+//                    }
+//
+//                } catch (e: SQLException) {
+//                    e.printStackTrace()
+//                } finally {
+//                    // Close the connection in a finally block
+//                    try {
+//                        connection.close()
+//                    } catch (e: SQLException) {
+//                        e.printStackTrace()
+//                    }
+//                }
+//            } else {
+//                runOnUiThread {
+//                    Toast.makeText(this@PekerjaActivity, "Tidak dapat tersambung", Toast.LENGTH_SHORT).show()
+//                }
+//            }
+//        }
 
-                    val preparedStatement: PreparedStatement = connection.prepareStatement(query)
-                    preparedStatement.setString(1, kode)
-                    preparedStatement.setString(2, kode)
-
-                    val resultSet: ResultSet = preparedStatement.executeQuery()
-
-                    var approveCount = 0
-                    var divertedCount = 0
-                    var returnCount = 0
-                    var rejectedCount = 0
-                    var pendingCount = 0
-                    var reviewCount = 0
-
-                    while (resultSet.next()) {
-                        val status = resultSet.getString("status")
-                        when (status) {
-                            "Returned" -> returnCount++
-                            "Diverted" -> divertedCount++
-                            "Rejected" -> rejectedCount++
-                            "Pending" -> pendingCount++
-                            "Review" -> reviewCount++
-                            else -> approveCount++
-                        }
-                    }
-
-                    // Update UI on the main thread
-                    runOnUiThread {
-                        setuju.text = approveCount.toString()
-                        tolak.text = rejectedCount.toString()
-                        revisi.text = returnCount.toString()
-                        tunda.text = pendingCount.toString()
-                    }
-
-                } catch (e: SQLException) {
-                    e.printStackTrace()
-                } finally {
-                    // Close the connection in a finally block
-                    try {
-                        connection.close()
-                    } catch (e: SQLException) {
-                        e.printStackTrace()
-                    }
-                }
-            } else {
-                runOnUiThread {
-                    Toast.makeText(this@PekerjaActivity, "Tidak dapat tersambung", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
+        val namaTV = binding.nama
+        val pendidikanTV = binding.jurusan
+        val lama = binding.masa
+        val namaProfile = binding.namaAkun
+        val umur = binding.umur
+        val klasifikasiTV = binding.klasifikasi
+        val kode = binding.kodePekerja
+        val polaTV = binding.pola
+        val pjpTV = binding.pjp
+        val fungsiTV = binding.fungsi
+        val birth = binding.tgl
+        val genderTV = binding.gender
+        val pekerjaan = binding.pekerjaan
+        namaTV.setText(user.nama)
+        pendidikanTV.setText(user.pendidikan)
+        lama.setText(user.masaKerja)
+        genderTV.setText(user.gender)
+        namaProfile.setText(user.nama)
+        birth.setText(user.tgl_lahir)
+        umur.setText(user.age)
+        fungsiTV.setText(user.fungsi)
+        klasifikasiTV.setText(user.klasifikasi)
+        polaTV.setText(user.pola)
+        pjpTV.setText(user.pjp)
+        kode.setText(user.kode)
+        pekerjaan.setText(user.jabatan)
+        setUsername(navigationView, user.nama)
     }
 
     private fun getName(kode:String){
@@ -361,7 +440,6 @@ class PekerjaActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelec
                     }
                 }
             } else {
-                setLoading(false)
                 Toast.makeText(this@PekerjaActivity,"Tidak dapat tersambung",Toast.LENGTH_SHORT).show()
             }
         }

@@ -43,13 +43,29 @@
                 android:layout_marginStart="50dp"
                 android:layout_marginEnd="50dp">
 
-                <!-- Add the SearchView widget -->
-                <androidx.appcompat.widget.SearchView
-                    android:id="@+id/search_view"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:queryHint="Search Data Lembur"
-                    app:iconifiedByDefault="false" />
+                    android:orientation="horizontal"
+                    android:gravity="end">
+
+                    <EditText
+                        android:id="@+id/search_edit_text"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="Search Data Lembur"
+                        android:gravity="center"/>
+
+                    <ImageView
+                        android:id="@+id/search_icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/baseline_search_24"
+                        android:contentDescription="Search"
+                        android:layout_gravity="center"
+                        android:layout_marginEnd="16dp" />
+                </LinearLayout>
             </FrameLayout>
             <!-- RecyclerView -->
             <androidx.recyclerview.widget.RecyclerView

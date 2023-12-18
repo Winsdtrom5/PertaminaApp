@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menulembur"
+        android:icon="@drawable/bag"
+        android:title="Permintaan Lembur"/>
+
+    <item
+        android:id="@+id/menuDinas"
+        android:icon="@drawable/baseline_airplanemode_active_24"
+        android:title="Permintaan Dinas"/>
+</menu>

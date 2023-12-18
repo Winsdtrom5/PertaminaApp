@@ -24,7 +24,11 @@
         android:id="@+id/menuSertifikat"
         android:icon="@drawable/baseline_insert_drive_file_24"
         android:title="Sertifikat"/>
-
+    <item
+        android:id="@+id/menupanduan"
+        android:enabled="true"
+        android:icon="@drawable/book"
+        android:title="Panduan Pengguna"/>
     <item
         android:id="@+id/menulogout"
         android:enabled="true"

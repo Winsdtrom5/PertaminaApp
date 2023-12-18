@@ -19,13 +19,32 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import android.Manifest
+import android.annotation.SuppressLint
+import android.content.ContentResolver
+import android.content.Context
 import android.net.Uri
+import android.os.Environment
+import android.provider.DocumentsContract
 import android.provider.OpenableColumns
+import android.util.Log
+import android.webkit.WebResourceError
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.FileProvider
+import androidx.core.view.isVisible
+import androidx.documentfile.provider.DocumentFile
 import com.example.pertaminaapp.R
+import com.example.pertaminaapp.model.HolidayList
+import com.example.pertaminaapp.model.User
+import com.github.barteksc.pdfviewer.PDFView
 import com.google.android.material.textfield.TextInputLayout
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.File
+import java.io.FileOutputStream
 import java.io.InputStream
 import java.util.Calendar
 
@@ -35,8 +54,12 @@ class TambahDinasFragment : Fragment() {
         private const val GALLERY_REQUEST_CODE = 1
         private const val CAMERA_REQUEST_CODE = 2
     }
+    private val READ_WRITE_PERMISSION_CODE = 123
     private val CAMERA_PERMISSION_CODE = 101
     private val PDF_REQUEST_CODE = 123
+    private lateinit var holidayList: HolidayList
+    private var user: User? = null
+    private lateinit var pdfView: WebView
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -50,17 +73,16 @@ class TambahDinasFragment : Fragment() {
         // Read and parse kota.json and provinsi.json
         val kotaDataList = readAndParseKotaJson()
         val provinsiDataList = readAndParseProvinsiJson()
-
         // Combine and display the data
         val combinedDataList = combineAndFormatData(kotaDataList, provinsiDataList)
-
         // Create an ArrayAdapter with the combined data
         val adapter = ArrayAdapter(
             requireContext(),
             android.R.layout.simple_dropdown_item_1line,
             combinedDataList
         )
-
+        user = arguments?.getParcelable("user")
+        holidayList = arguments?.getParcelable("holidayList") ?: HolidayList(emptyList())
         // Set the adapter to the AutoCompleteTextView
         val textviewasal = view.findViewById<AutoCompleteTextView>(R.id.acasal)
         val textviewtujuan = view.findViewById<AutoCompleteTextView>(R.id.actujuan)
@@ -86,13 +108,71 @@ class TambahDinasFragment : Fragment() {
                 showDatePickerDialog(editText)
             }
         }
-        val uploadButton = view.findViewById<Button>(R.id.uploadButton)
+        val uploadButton = view.findViewById<Button>(R.id.uploadfile)
 
         uploadButton.setOnClickListener {
             // Show a dialog or options to select the source (gallery or camera)
             pickPdfFile()
         }
     }
+    // Check if permissions are granted, and request them if not
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        if (requestCode == READ_WRITE_PERMISSION_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+
+                // Permissions granted, load the PDF.
+                pickPdfFile()
+            } else {
+                // Permissions denied, handle accordingly (e.g., show a message to the user).
+                // You can inform the user why the permissions are required.
+            }
+        }
+    }
+//    private fun copyFileToInternalStorage(uri: Uri): String? {
+//        try {
+//            val contentResolver = requireContext().contentResolver
+//            val displayName = getFileName(uri)
+//            val outputPath = File(requireContext().getDir("pdfs", Context.MODE_PRIVATE), displayName)
+//            if (!outputPath.exists()) {
+//                val inputStream = contentResolver.openInputStream(uri)
+//                if (inputStream != null) {
+//                    val outputStream = FileOutputStream(outputPath)
+//                    val buffer = ByteArray(4 * 1024)
+//                    var bytesRead: Int
+//                    while (inputStream.read(buffer).also { bytesRead = it } >= 0) {
+//                        outputStream.write(buffer, 0, bytesRead)
+//                    }
+//                    outputStream.flush()
+//                    outputStream.close()
+//                    inputStream.close()
+//                    return outputPath.absolutePath
+//                }
+//            } else {
+//                return outputPath.absolutePath
+//            }
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        }
+//        return null
+//    }
+//
+//    private fun loadPdfInWebView(pdfPath: String) {
+//        pdfView.visibility = View.VISIBLE
+//        pdfView.settings.allowFileAccess = true
+//        pdfView.settings.javaScriptEnabled = true
+//
+//        pdfView.loadUrl("file://$pdfPath")
+//        Log.d(pdfPath,pdfPath)
+//        pdfView.webViewClient = object : WebViewClient() {
+//            override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
+//                super.onReceivedError(view, request, error)
+//                Log.e("WebView Error", "Error: ${error?.description}")
+//            }
+//        }
+//    }
+
     private fun pickPdfFile() {
         val intent = Intent(Intent.ACTION_GET_CONTENT)
         intent.type = "application/pdf"
@@ -102,27 +182,40 @@ class TambahDinasFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                PDF_REQUEST_CODE -> {
-                    // Handle the selected PDF file
-                    val selectedPdfUri = data?.data
-                    if (selectedPdfUri != null) {
-                        // Extract the file name from the URI
-                        val fileName = getFileName(selectedPdfUri)
-
-                        // Set the file name on your button or TextView
-                        val uploadButton = view?.findViewById<Button>(R.id.uploadButton)
-                        uploadButton?.text = fileName
-
-                        // Process the selected PDF file here
-                    }
+        if (requestCode == PDF_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            data?.data?.let { uri ->
+                // Get the file name from the URI
+                val cursor = requireContext().contentResolver.query(uri, null, null, null, null)
+                val displayName = cursor?.use {
+                    it.moveToFirst()
+                    val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                    it.getString(nameIndex)
                 }
+
+                // Update the selectedFileName TextView with the file name
+                val selectedFileName = view?.findViewById<TextView>(R.id.selectedFileName)
+                selectedFileName?.text = displayName ?: "No file selected"
             }
         }
     }
 
+    @SuppressLint("Range")
     private fun getFileName(uri: Uri): String {
+        val cursor = requireContext().contentResolver.query(uri, null, null, null, null)
+        cursor?.use {
+            if (it.moveToFirst()) {
+                val displayName = it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+                if (!displayName.isNullOrBlank()) {
+                    return displayName
+                }
+            }
+        }
+        return uri.lastPathSegment ?: "unknown.pdf"
+    }
+
+
+
+    private fun getFileName2(uri: Uri): String {
         var result: String? = null
         if (uri.scheme == "content") {
             val cursor = requireActivity().contentResolver.query(uri, null, null, null, null)

@@ -1,0 +1,15 @@
+<!-- fragment_pdf_page.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    tools:context=".fragment.PdfPageFragment">
+
+    <ImageView
+        android:id="@+id/pdfImageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter" />
+
+</LinearLayout>

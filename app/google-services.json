@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "872075133408",
+    "project_id": "pertaminaapp-405903",
+    "storage_bucket": "pertaminaapp-405903.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:872075133408:android:3b964d79d698be75082b85",
+        "android_client_info": {
+          "package_name": "com.example.pertaminaapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBak4dtNLfOfxZHzCw0az5fHrWGyzuUDCk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
